@@ -1,0 +1,51 @@
+# -*- coding: utf-8 -*-
+"""
+速查早盘监控 · 快速演示（5 个关键时间点）
+只需 ~3 秒生成 5 拍输出，无东财 API 限流等待
+用法: cd 盘中监控脚本 && python3 speedcard_monitor_quick_demo.py
+"""
+import sys
+import os
+
+_SELF_DIR = os.path.dirname(os.path.abspath(__file__))
+_PIPELINE_DIR = os.path.normpath(os.path.join(_SELF_DIR, "..", "pipeline"))
+sys.path.insert(0, _PIPELINE_DIR)
+sys.path.insert(0, _SELF_DIR)
+
+from speedcard_monitor import build_parsed_card, run_tick
+
+def quick_demo():
+    """快速演示：仅展示 5 个关键时间点"""
+    pc = build_parsed_card(None)
+    if not pc:
+        print("❌ 未找到速查文件", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"\n{'=' * 130}")
+    print(f"📊 速查早盘监控 · 快速演示（9:15～9:50 关键时间点）")
+    print(f"📂 速查文件: {pc.path}")
+    print(f"{'=' * 130}\n")
+
+    # 关键时间点
+    timepoints = [
+        (915, "9:15 — 竞价初期，主线关键位初现"),
+        (925, "9:25 — 竞价结束，封单额定格"),
+        (935, "9:35 — 连续竞价第5分钟，主线反应明确"),
+        (945, "9:45 — 连续竞价第15分钟，观点稳定"),
+        (950, "9:50 — 监控窗口末尾，最后决策参考"),
+    ]
+
+    for hm, desc in timepoints:
+        try:
+            line = run_tick(pc, hm)
+            print(f"📍 {desc}")
+            print(f"   {line}\n")
+        except Exception as e:
+            print(f"❌ [{hm//100:02d}:{hm%100:02d}] 异常: {e}\n")
+
+    print(f"{'=' * 130}\n")
+    print("✅ 演示完成。每行输出结构：")
+    print("   时间——[事实分句分号分隔]；结论——[模式 A/B/FUZZY]；[操作建议]；\n")
+
+if __name__ == "__main__":
+    quick_demo()

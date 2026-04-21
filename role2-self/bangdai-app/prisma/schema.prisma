@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite 不支持 Prisma enum，使用字符串并在应用层约束取值
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         String   @default("user") // user | admin
+  displayName  String
+  createdAt    DateTime @default(now())
+
+  petCarryOffers PetCarryOffer[]
+  petCarryNeeds  PetCarryNeed[]
+  interests      PetCarryMatch[] @relation("InterestFrom")
+  messages       Message[]
+  reports        Report[]
+}
+
+/// 旅客发布的「可协助携带宠物」的国际航班意向
+model PetCarryOffer {
+  id               String   @id @default(cuid())
+  ownerId          String
+  owner            User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  originCity       String
+  destinationCity  String
+  flightDate       DateTime
+  acceptedSpecies  String // 可接受的宠物类型，如：猫、小型犬（客舱）
+  maxPetWeightKg   Float
+  carryMode        String   @default("either") // cabin | hold | either
+  priceModel       String // perPet | fixed
+  price            Float
+  currency         String   @default("CNY")
+  notes            String   @default("")
+  status           String   @default("open") // open | full | cancelled
+  createdAt        DateTime @default(now())
+
+  matches PetCarryMatch[]
+}
+
+/// 需求方发布的宠物帮带需求
+model PetCarryNeed {
+  id               String   @id @default(cuid())
+  ownerId          String
+  owner            User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  originCity       String   @default("")
+  destinationCity  String
+  neededByDate     DateTime
+  petSpecies       String
+  petWeightKg      Float
+  petNotes         String
+  budgetMin        Float
+  budgetMax        Float
+  currency         String   @default("CNY")
+  status           String   @default("open") // open | matched | cancelled
+  createdAt        DateTime @default(now())
+
+  matches PetCarryMatch[]
+}
+
+model PetCarryMatch {
+  id         String   @id @default(cuid())
+  offerId    String
+  offer      PetCarryOffer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  needId     String
+  need       PetCarryNeed  @relation(fields: [needId], references: [id], onDelete: Cascade)
+  fromUserId String
+  fromUser   User     @relation("InterestFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
+  status     String   @default("pending") // pending | accepted | rejected | completed | disputed
+  createdAt  DateTime @default(now())
+
+  commission CommissionRecord?
+
+  @@unique([offerId, needId])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  threadId  String
+  senderId  String
+  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([threadId])
+}
+
+model CommissionRecord {
+  id                String   @id @default(cuid())
+  petCarryMatchId   String   @unique
+  petCarryMatch     PetCarryMatch @relation(fields: [petCarryMatchId], references: [id], onDelete: Cascade)
+  agreedAmount      Float
+  platformFeeRate   Float
+  platformFeeAmount Float
+  status            String   @default("recorded") // recorded | waived_demo
+}
+
+model Report {
+  id         String   @id @default(cuid())
+  targetType String
+  targetId   String
+  reason     String
+  createdBy  String
+  creator    User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+}

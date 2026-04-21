@@ -1,0 +1,65 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "帮带 · CarryLink" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - navigation [ref=e5]:
+        - link "行程" [ref=e6] [cursor=pointer]:
+          - /url: /trips
+        - link "需求" [ref=e7] [cursor=pointer]:
+          - /url: /requests
+        - link "消息" [ref=e8] [cursor=pointer]:
+          - /url: /messages
+        - link "免责" [ref=e9] [cursor=pointer]:
+          - /url: /legal/disclaimer
+        - link "禁运" [ref=e10] [cursor=pointer]:
+          - /url: /legal/prohibited
+        - generic [ref=e11]:
+          - generic [ref=e12]: b_1774854210627_519771@example.com
+          - button "退出" [ref=e13] [cursor=pointer]
+  - main [ref=e14]:
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - heading "行程列表" [level=1] [ref=e18]
+          - paragraph [ref=e19]: 筛选目的地与日期区间（可选）
+        - link "发布行程" [ref=e20] [cursor=pointer]:
+          - /url: /trips/new
+      - generic [ref=e21]:
+        - generic [ref=e22]:
+          - text: 目的地
+          - textbox "如 东京" [ref=e23]
+        - generic [ref=e24]:
+          - text: 日期从
+          - textbox [ref=e25]
+        - generic [ref=e26]:
+          - text: 日期到
+          - textbox [ref=e27]
+        - button "筛选" [ref=e28] [cursor=pointer]
+      - list [ref=e29]:
+        - listitem [ref=e30]:
+          - link "上海 → 东京 2026-03-30 余量 5 kg · perKg · 80 CNY · 发布方 旅客甲" [ref=e31] [cursor=pointer]:
+            - /url: /trips/cmncu4llo000213nokcf8u5tm
+            - generic [ref=e32]:
+              - generic [ref=e33]: 上海 → 东京
+              - generic [ref=e34]: 2026-03-30
+            - generic [ref=e35]: 余量 5 kg · perKg · 80 CNY · 发布方 旅客甲
+        - listitem [ref=e36]:
+          - link "上海 → 东京 2026-03-30 余量 5 kg · perKg · 80 CNY · 发布方 旅客甲" [ref=e37] [cursor=pointer]:
+            - /url: /trips/cmncu8hqn0002opojouer3n9v
+            - generic [ref=e38]:
+              - generic [ref=e39]: 上海 → 东京
+              - generic [ref=e40]: 2026-03-30
+            - generic [ref=e41]: 余量 5 kg · perKg · 80 CNY · 发布方 旅客甲
+        - listitem [ref=e42]:
+          - link "上海 → 东京 2026-03-30 余量 5 kg · perKg · 80 CNY · 发布方 旅客甲" [ref=e43] [cursor=pointer]:
+            - /url: /trips/cmncudgxk0002or21c6x2m8l9
+            - generic [ref=e44]:
+              - generic [ref=e45]: 上海 → 东京
+              - generic [ref=e46]: 2026-03-30
+            - generic [ref=e47]: 余量 5 kg · perKg · 80 CNY · 发布方 旅客甲
+  - alert [ref=e48]
+```

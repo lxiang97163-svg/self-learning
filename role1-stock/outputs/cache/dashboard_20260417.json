@@ -1,0 +1,411 @@
+{
+  "tick_time": "17:09",
+  "sh_price": 4051.43,
+  "sh_price_str": "4051.43",
+  "key_support": 3871.0,
+  "sh_ok": true,
+  "p1_title": "第一优先",
+  "p1_health": {
+    "required": 2,
+    "ok_count": 0,
+    "passed": false,
+    "checks": []
+  },
+  "p1": [
+    {
+      "label": "龙一·圣阳股份",
+      "ts_code": "002580.SZ",
+      "pct": 9.999999999999986,
+      "pct_str": "+10.00%",
+      "pct_thr": 5.67,
+      "amt_thr": null,
+      "status_type": "sealed",
+      "status_text": "⚠封死",
+      "has_auc": true,
+      "auc_amt": 1.64,
+      "auc_ok": null
+    },
+    {
+      "label": "龙二·大中矿业",
+      "ts_code": "001203.SZ",
+      "pct": 0.2802328087950112,
+      "pct_str": "+0.28%",
+      "pct_thr": 3.3,
+      "amt_thr": null,
+      "status_type": "watch",
+      "status_text": "→ 观望 (需≥3.30%)",
+      "has_auc": true,
+      "auc_amt": 0.39,
+      "auc_ok": null
+    },
+    {
+      "label": "龙三·大为股份",
+      "ts_code": "002213.SZ",
+      "pct": -1.5910276473656948,
+      "pct_str": "-1.59%",
+      "pct_thr": 3.3,
+      "amt_thr": null,
+      "status_type": "drop",
+      "status_text": "↘ 低开",
+      "has_auc": true,
+      "auc_amt": 0.48,
+      "auc_ok": null
+    },
+    {
+      "label": "龙四·宝丽迪",
+      "ts_code": "300905.SZ",
+      "pct": 19.991364421416225,
+      "pct_str": "+19.99%",
+      "pct_thr": 3.0,
+      "amt_thr": null,
+      "status_type": "sealed",
+      "status_text": "⚠封死",
+      "has_auc": true,
+      "auc_amt": 0.77,
+      "auc_ok": null
+    },
+    {
+      "label": "龙五·大东南",
+      "ts_code": "002263.SZ",
+      "pct": -3.675048355899413,
+      "pct_str": "-3.68%",
+      "pct_thr": 3.0,
+      "amt_thr": null,
+      "status_type": "drop",
+      "status_text": "↘ 低开",
+      "has_auc": true,
+      "auc_amt": 1.0,
+      "auc_ok": null
+    },
+    {
+      "label": "龙一·世运电路",
+      "ts_code": "603920.SH",
+      "pct": 0.4077471967380175,
+      "pct_str": "+0.41%",
+      "pct_thr": 3.0,
+      "amt_thr": null,
+      "status_type": "watch",
+      "status_text": "→ 观望 (需≥3.00%)",
+      "has_auc": true,
+      "auc_amt": 2.75,
+      "auc_ok": null
+    },
+    {
+      "label": "龙二·美利云",
+      "ts_code": "000815.SZ",
+      "pct": -2.74651058081945,
+      "pct_str": "-2.75%",
+      "pct_thr": 3.0,
+      "amt_thr": null,
+      "status_type": "drop",
+      "status_text": "↘ 低开",
+      "has_auc": true,
+      "auc_amt": 1.05,
+      "auc_ok": null
+    },
+    {
+      "label": "龙三·奥瑞德",
+      "ts_code": "600666.SH",
+      "pct": 3.50364963503651,
+      "pct_str": "+3.50%",
+      "pct_thr": 3.0,
+      "amt_thr": null,
+      "status_type": "ok",
+      "status_text": "✓ 涨幅 (≥3.00%)",
+      "has_auc": true,
+      "auc_amt": 1.05,
+      "auc_ok": null
+    },
+    {
+      "label": "龙四·超讯通信",
+      "ts_code": "603322.SH",
+      "pct": 5.0468836183122034,
+      "pct_str": "+5.05%",
+      "pct_thr": 3.0,
+      "amt_thr": null,
+      "status_type": "ok",
+      "status_text": "✓ 涨幅 (≥3.00%)",
+      "has_auc": true,
+      "auc_amt": 0.23,
+      "auc_ok": null
+    },
+    {
+      "label": "龙五·润建股份",
+      "ts_code": "002929.SZ",
+      "pct": -6.0499310767345715,
+      "pct_str": "-6.05%",
+      "pct_thr": 3.3,
+      "amt_thr": null,
+      "status_type": "drop",
+      "status_text": "↘ 低开",
+      "has_auc": true,
+      "auc_amt": 0.31,
+      "auc_ok": null
+    }
+  ],
+  "p2_title": "第二优先",
+  "p2_health": {
+    "required": 2,
+    "ok_count": 0,
+    "passed": false,
+    "checks": []
+  },
+  "p2": [
+    {
+      "label": "龙一·盛视科技",
+      "ts_code": "002990.SZ",
+      "pct": 9.995682210708123,
+      "pct_str": "+10.00%",
+      "pct_thr": 3.94,
+      "amt_thr": null,
+      "status_type": "sealed",
+      "status_text": "⚠封死",
+      "has_auc": true,
+      "auc_amt": 0.79,
+      "auc_ok": null
+    },
+    {
+      "label": "龙二·申通快递",
+      "ts_code": "002468.SZ",
+      "pct": -4.714364947310045,
+      "pct_str": "-4.71%",
+      "pct_thr": 3.3,
+      "amt_thr": null,
+      "status_type": "drop",
+      "status_text": "↘ 低开",
+      "has_auc": true,
+      "auc_amt": 0.28,
+      "auc_ok": null
+    },
+    {
+      "label": "龙三·大胜达",
+      "ts_code": "603687.SH",
+      "pct": -2.9737903225806495,
+      "pct_str": "-2.97%",
+      "pct_thr": 3.3,
+      "amt_thr": null,
+      "status_type": "drop",
+      "status_text": "↘ 低开",
+      "has_auc": true,
+      "auc_amt": 0.99,
+      "auc_ok": null
+    },
+    {
+      "label": "龙四·东方电气",
+      "ts_code": "600875.SH",
+      "pct": -0.7611798287345373,
+      "pct_str": "-0.76%",
+      "pct_thr": 3.0,
+      "amt_thr": null,
+      "status_type": "drop",
+      "status_text": "↘ 低开",
+      "has_auc": true,
+      "auc_amt": 1.54,
+      "auc_ok": null
+    },
+    {
+      "label": "龙五·劲旅环境",
+      "ts_code": "001230.SZ",
+      "pct": 0.9740259740259827,
+      "pct_str": "+0.97%",
+      "pct_thr": 3.0,
+      "amt_thr": null,
+      "status_type": "watch",
+      "status_text": "→ 观望 (需≥3.00%)",
+      "has_auc": true,
+      "auc_amt": 0.03,
+      "auc_ok": null
+    }
+  ],
+  "b_candidates": [
+    {
+      "title": "创新药（3.5·✅低吸窗口）",
+      "switch_eval": {
+        "required": 2,
+        "auto_ok_count": 0,
+        "pool_ok": false,
+        "pool_detail": "0/5只≥+3.0%",
+        "checks": [
+          {
+            "desc": "板块排名（人工）",
+            "auto": false,
+            "pass": null
+          },
+          {
+            "desc": "池内≥2只≥+3.0%  当前0只",
+            "auto": true,
+            "pass": false
+          },
+          {
+            "desc": "封单/龙头确认（人工）",
+            "auto": false,
+            "pass": null
+          }
+        ]
+      },
+      "stocks": [
+        {
+          "label": "1·哈药股份",
+          "ts_code": "600664.SH",
+          "pct": -5.2272727272727355,
+          "pct_str": "-5.23%",
+          "pct_thr": 3.3,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 1.36,
+          "auc_ok": null
+        },
+        {
+          "label": "2·华人健康",
+          "ts_code": "301408.SZ",
+          "pct": -1.845556095191836,
+          "pct_str": "-1.85%",
+          "pct_thr": null,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.19,
+          "auc_ok": null
+        },
+        {
+          "label": "3·北大医药",
+          "ts_code": "000788.SZ",
+          "pct": -1.8018018018018056,
+          "pct_str": "-1.80%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.13,
+          "auc_ok": null
+        },
+        {
+          "label": "4·金陵药业",
+          "ts_code": "000919.SZ",
+          "pct": -4.0963855421686795,
+          "pct_str": "-4.10%",
+          "pct_thr": null,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.3,
+          "auc_ok": null
+        },
+        {
+          "label": "5·瑞康医药",
+          "ts_code": "002589.SZ",
+          "pct": -5.769230769230771,
+          "pct_str": "-5.77%",
+          "pct_thr": null,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.59,
+          "auc_ok": null
+        }
+      ]
+    },
+    {
+      "title": "芯片概念（3.5·✅低吸窗口）",
+      "switch_eval": {
+        "required": 2,
+        "auto_ok_count": 1,
+        "pool_ok": true,
+        "pool_detail": "4/5只≥+3.0%",
+        "checks": [
+          {
+            "desc": "板块排名前8（人工）",
+            "auto": false,
+            "pass": null
+          },
+          {
+            "desc": "池内≥2只≥+3.0%  当前4只",
+            "auto": true,
+            "pass": true
+          },
+          {
+            "desc": "封单/龙头确认（人工）",
+            "auto": false,
+            "pass": null
+          }
+        ]
+      },
+      "stocks": [
+        {
+          "label": "1·宏和科技",
+          "ts_code": "603256.SH",
+          "pct": 3.743842364532024,
+          "pct_str": "+3.74%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "ok",
+          "status_text": "✓ 涨幅 (≥3.00%)",
+          "has_auc": true,
+          "auc_amt": 0.82,
+          "auc_ok": null
+        },
+        {
+          "label": "2·瑞斯康达",
+          "ts_code": "603803.SH",
+          "pct": 3.618421052631593,
+          "pct_str": "+3.62%",
+          "pct_thr": null,
+          "amt_thr": null,
+          "status_type": "ok",
+          "status_text": "✓ 涨幅 (≥3.0%)",
+          "has_auc": true,
+          "auc_amt": 0.1,
+          "auc_ok": null
+        },
+        {
+          "label": "3·铭普光磁",
+          "ts_code": "002902.SZ",
+          "pct": -0.7838014369693114,
+          "pct_str": "-0.78%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.16,
+          "auc_ok": null
+        },
+        {
+          "label": "4·科瑞技术",
+          "ts_code": "002957.SZ",
+          "pct": 10.002392916965785,
+          "pct_str": "+10.00%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 0.27,
+          "auc_ok": null
+        },
+        {
+          "label": "5·泰晶科技",
+          "ts_code": "603738.SH",
+          "pct": 9.989063069631786,
+          "pct_str": "+9.99%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 0.18,
+          "auc_ok": null
+        }
+      ]
+    }
+  ],
+  "watch_packages": [],
+  "updated_at": "2026-04-17T17:09:12",
+  "push_id": 1776416952861688162
+}

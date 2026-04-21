@@ -1,0 +1,1063 @@
+{
+  "tick_time": "23:19",
+  "sh_price": 4082.13,
+  "sh_price_str": "4082.13",
+  "key_support": 3875.68,
+  "sh_ok": true,
+  "p1_title": "第一优先（军工）",
+  "p1_health": {
+    "required": 2,
+    "ok_count": 3,
+    "passed": true,
+    "checks": [
+      {
+        "name": "天通股份",
+        "ts_code": "600330.SH",
+        "thr_str": ">+0.0%",
+        "pct": 9.99,
+        "pct_str": "+9.99%",
+        "pass": true
+      },
+      {
+        "name": "云南锗业",
+        "ts_code": "002428.SZ",
+        "thr_str": ">-3.0%",
+        "pct": 10.0,
+        "pct_str": "+10.00%",
+        "pass": true
+      },
+      {
+        "name": "中国卫通",
+        "ts_code": "601698.SH",
+        "thr_str": ">+3.0%",
+        "pct": 10.01,
+        "pct_str": "+10.01%",
+        "pass": true
+      }
+    ]
+  },
+  "p1": [
+    {
+      "label": "龙一·博云新材",
+      "ts_code": "002297.SZ",
+      "pct": 10.005652911249285,
+      "pct_str": "+10.01%",
+      "pct_thr": 5.67,
+      "amt_thr": null,
+      "status_type": "sealed",
+      "status_text": "⚠封死",
+      "has_auc": true,
+      "auc_amt": 1.44,
+      "auc_ok": null,
+      "prev_auc_bn": 1.436,
+      "auc_ratio": 1.0
+    },
+    {
+      "label": "龙二·天通股份",
+      "ts_code": "600330.SH",
+      "pct": 9.986194201564658,
+      "pct_str": "+9.99%",
+      "pct_thr": 3.34,
+      "amt_thr": 3.71,
+      "status_type": "sealed",
+      "status_text": "⚠封死",
+      "has_auc": true,
+      "auc_amt": 2.76,
+      "auc_ok": false,
+      "prev_auc_bn": 2.7581,
+      "auc_ratio": 1.0
+    },
+    {
+      "label": "龙三·云南锗业",
+      "ts_code": "002428.SZ",
+      "pct": 10.000000000000009,
+      "pct_str": "+10.00%",
+      "pct_thr": 3.34,
+      "amt_thr": null,
+      "status_type": "sealed",
+      "status_text": "⚠封死",
+      "has_auc": true,
+      "auc_amt": 2.21,
+      "auc_ok": null,
+      "prev_auc_bn": 2.2108,
+      "auc_ratio": 1.0
+    },
+    {
+      "label": "龙四·中国卫星",
+      "ts_code": "600118.SH",
+      "pct": 9.996508786221337,
+      "pct_str": "+10.00%",
+      "pct_thr": 3.34,
+      "amt_thr": null,
+      "status_type": "sealed",
+      "status_text": "⚠封死",
+      "has_auc": true,
+      "auc_amt": 0.2,
+      "auc_ok": null,
+      "prev_auc_bn": 0.1974,
+      "auc_ratio": 1.0002
+    },
+    {
+      "label": "龙五·中国卫通",
+      "ts_code": "601698.SH",
+      "pct": 10.005885815185422,
+      "pct_str": "+10.01%",
+      "pct_thr": null,
+      "amt_thr": null,
+      "status_type": "sealed",
+      "status_text": "⚠封死",
+      "has_auc": true,
+      "auc_amt": 0.11,
+      "auc_ok": null,
+      "prev_auc_bn": 0.1058,
+      "auc_ratio": 1.0001
+    }
+  ],
+  "p1_chains": [
+    {
+      "title": "第一优先（军工）",
+      "stocks": [
+        {
+          "label": "龙一·博云新材",
+          "ts_code": "002297.SZ",
+          "pct": 10.005652911249285,
+          "pct_str": "+10.01%",
+          "pct_thr": 5.67,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 1.44,
+          "auc_ok": null,
+          "prev_auc_bn": 1.436,
+          "auc_ratio": 1.0
+        },
+        {
+          "label": "龙二·天通股份",
+          "ts_code": "600330.SH",
+          "pct": 9.986194201564658,
+          "pct_str": "+9.99%",
+          "pct_thr": 3.34,
+          "amt_thr": 3.71,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 2.76,
+          "auc_ok": false,
+          "prev_auc_bn": 2.7581,
+          "auc_ratio": 1.0
+        },
+        {
+          "label": "龙三·云南锗业",
+          "ts_code": "002428.SZ",
+          "pct": 10.000000000000009,
+          "pct_str": "+10.00%",
+          "pct_thr": 3.34,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 2.21,
+          "auc_ok": null,
+          "prev_auc_bn": 2.2108,
+          "auc_ratio": 1.0
+        },
+        {
+          "label": "龙四·中国卫星",
+          "ts_code": "600118.SH",
+          "pct": 9.996508786221337,
+          "pct_str": "+10.00%",
+          "pct_thr": 3.34,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 0.2,
+          "auc_ok": null,
+          "prev_auc_bn": 0.1974,
+          "auc_ratio": 1.0002
+        },
+        {
+          "label": "龙五·中国卫通",
+          "ts_code": "601698.SH",
+          "pct": 10.005885815185422,
+          "pct_str": "+10.01%",
+          "pct_thr": null,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 0.11,
+          "auc_ok": null,
+          "prev_auc_bn": 0.1058,
+          "auc_ratio": 1.0001
+        }
+      ],
+      "health": {
+        "required": 2,
+        "ok_count": 3,
+        "passed": true,
+        "checks": [
+          {
+            "name": "天通股份",
+            "ts_code": "600330.SH",
+            "thr_str": ">+0.0%",
+            "pct": 9.99,
+            "pct_str": "+9.99%",
+            "pass": true
+          },
+          {
+            "name": "云南锗业",
+            "ts_code": "002428.SZ",
+            "thr_str": ">-3.0%",
+            "pct": 10.0,
+            "pct_str": "+10.00%",
+            "pass": true
+          },
+          {
+            "name": "中国卫通",
+            "ts_code": "601698.SH",
+            "thr_str": ">+3.0%",
+            "pct": 10.01,
+            "pct_str": "+10.01%",
+            "pass": true
+          }
+        ]
+      }
+    }
+  ],
+  "p2_title": "第二优先（华为·数据中心）",
+  "p2_health": {
+    "required": 2,
+    "ok_count": 3,
+    "passed": true,
+    "checks": [
+      {
+        "name": "中天科技",
+        "ts_code": "600522.SH",
+        "thr_str": ">+0.0%",
+        "pct": 9.99,
+        "pct_str": "+9.99%",
+        "pass": true
+      },
+      {
+        "name": "方正科技",
+        "ts_code": "600601.SH",
+        "thr_str": ">+0.0%",
+        "pct": 10.02,
+        "pct_str": "+10.02%",
+        "pass": true
+      },
+      {
+        "name": "康盛股份",
+        "ts_code": "002418.SZ",
+        "thr_str": ">-3.0%",
+        "pct": 10.02,
+        "pct_str": "+10.02%",
+        "pass": true
+      }
+    ]
+  },
+  "p2": [
+    {
+      "label": "龙一·合力泰",
+      "ts_code": "002217.SZ",
+      "pct": 10.074626865671643,
+      "pct_str": "+10.07%",
+      "pct_thr": 3.34,
+      "amt_thr": 0.53,
+      "status_type": "sealed",
+      "status_text": "⚠封死",
+      "has_auc": true,
+      "auc_amt": 1.55,
+      "auc_ok": true,
+      "prev_auc_bn": 1.5502,
+      "auc_ratio": 1.0
+    },
+    {
+      "label": "龙二·中天科技",
+      "ts_code": "600522.SH",
+      "pct": 9.985785358919674,
+      "pct_str": "+9.99%",
+      "pct_thr": 3.0,
+      "amt_thr": null,
+      "status_type": "sealed",
+      "status_text": "⚠封死",
+      "has_auc": true,
+      "auc_amt": 1.06,
+      "auc_ok": null,
+      "prev_auc_bn": 1.059,
+      "auc_ratio": 1.0
+    },
+    {
+      "label": "龙三·方正科技",
+      "ts_code": "600601.SH",
+      "pct": 10.018726591760307,
+      "pct_str": "+10.02%",
+      "pct_thr": null,
+      "amt_thr": null,
+      "status_type": "sealed",
+      "status_text": "⚠封死",
+      "has_auc": true,
+      "auc_amt": 0.33,
+      "auc_ok": null,
+      "prev_auc_bn": 0.327,
+      "auc_ratio": 0.9999
+    },
+    {
+      "label": "龙四·华升股份",
+      "ts_code": "600156.SH",
+      "pct": 10.043196544276455,
+      "pct_str": "+10.04%",
+      "pct_thr": 3.82,
+      "amt_thr": null,
+      "status_type": "sealed",
+      "status_text": "⚠封死",
+      "has_auc": true,
+      "auc_amt": 0.27,
+      "auc_ok": null,
+      "prev_auc_bn": 0.2701,
+      "auc_ratio": 0.9998
+    },
+    {
+      "label": "龙五·康盛股份",
+      "ts_code": "002418.SZ",
+      "pct": 10.016155088852985,
+      "pct_str": "+10.02%",
+      "pct_thr": 3.94,
+      "amt_thr": null,
+      "status_type": "sealed",
+      "status_text": "⚠封死",
+      "has_auc": true,
+      "auc_amt": 1.58,
+      "auc_ok": null,
+      "prev_auc_bn": 1.581,
+      "auc_ratio": 1.0
+    }
+  ],
+  "p2_chains": [
+    {
+      "title": "第二优先（华为·数据中心）",
+      "stocks": [
+        {
+          "label": "龙一·合力泰",
+          "ts_code": "002217.SZ",
+          "pct": 10.074626865671643,
+          "pct_str": "+10.07%",
+          "pct_thr": 3.34,
+          "amt_thr": 0.53,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 1.55,
+          "auc_ok": true,
+          "prev_auc_bn": 1.5502,
+          "auc_ratio": 1.0
+        },
+        {
+          "label": "龙二·中天科技",
+          "ts_code": "600522.SH",
+          "pct": 9.985785358919674,
+          "pct_str": "+9.99%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 1.06,
+          "auc_ok": null,
+          "prev_auc_bn": 1.059,
+          "auc_ratio": 1.0
+        },
+        {
+          "label": "龙三·方正科技",
+          "ts_code": "600601.SH",
+          "pct": 10.018726591760307,
+          "pct_str": "+10.02%",
+          "pct_thr": null,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 0.33,
+          "auc_ok": null,
+          "prev_auc_bn": 0.327,
+          "auc_ratio": 0.9999
+        },
+        {
+          "label": "龙四·华升股份",
+          "ts_code": "600156.SH",
+          "pct": 10.043196544276455,
+          "pct_str": "+10.04%",
+          "pct_thr": 3.82,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 0.27,
+          "auc_ok": null,
+          "prev_auc_bn": 0.2701,
+          "auc_ratio": 0.9998
+        },
+        {
+          "label": "龙五·康盛股份",
+          "ts_code": "002418.SZ",
+          "pct": 10.016155088852985,
+          "pct_str": "+10.02%",
+          "pct_thr": 3.94,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 1.58,
+          "auc_ok": null,
+          "prev_auc_bn": 1.581,
+          "auc_ratio": 1.0
+        }
+      ],
+      "health": {
+        "required": 2,
+        "ok_count": 3,
+        "passed": true,
+        "checks": [
+          {
+            "name": "中天科技",
+            "ts_code": "600522.SH",
+            "thr_str": ">+0.0%",
+            "pct": 9.99,
+            "pct_str": "+9.99%",
+            "pass": true
+          },
+          {
+            "name": "方正科技",
+            "ts_code": "600601.SH",
+            "thr_str": ">+0.0%",
+            "pct": 10.02,
+            "pct_str": "+10.02%",
+            "pass": true
+          },
+          {
+            "name": "康盛股份",
+            "ts_code": "002418.SZ",
+            "thr_str": ">-3.0%",
+            "pct": 10.02,
+            "pct_str": "+10.02%",
+            "pass": true
+          }
+        ]
+      }
+    }
+  ],
+  "b_candidates": [
+    {
+      "title": "光通信 / CPO（龙周期：高位分化·3.5节：芯片/光模块侧观察；不含封单异常票）",
+      "switch_eval": {
+        "required": 2,
+        "auto_ok_count": 1,
+        "pool_ok": true,
+        "pool_detail": "4/5只≥+3.0%",
+        "checks": [
+          {
+            "desc": "板块排名前5（人工）",
+            "auto": false,
+            "pass": null
+          },
+          {
+            "desc": "池内≥2只≥+3.0%  当前4只",
+            "auto": true,
+            "pass": true
+          },
+          {
+            "desc": "封单/龙头确认（人工）",
+            "auto": false,
+            "pass": null
+          }
+        ]
+      },
+      "stocks": [
+        {
+          "label": "1·剑桥科技",
+          "ts_code": "603083.SH",
+          "pct": 4.824833092435821,
+          "pct_str": "+4.82%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "ok",
+          "status_text": "✓ 涨幅 (≥3.00%)",
+          "has_auc": true,
+          "auc_amt": 2.6,
+          "auc_ok": null,
+          "prev_auc_bn": 2.6036,
+          "auc_ratio": 1.0
+        },
+        {
+          "label": "2·汇源通信",
+          "ts_code": "000586.SZ",
+          "pct": 10.000000000000009,
+          "pct_str": "+10.00%",
+          "pct_thr": null,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 0.19,
+          "auc_ok": null,
+          "prev_auc_bn": 0.1917,
+          "auc_ratio": 1.0001
+        },
+        {
+          "label": "3·通鼎互联",
+          "ts_code": "002491.SZ",
+          "pct": 9.980171844018514,
+          "pct_str": "+9.98%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 1.04,
+          "auc_ok": null,
+          "prev_auc_bn": 1.0434,
+          "auc_ratio": 1.0
+        },
+        {
+          "label": "4·光迅科技",
+          "ts_code": "002281.SZ",
+          "pct": 2.756141402037149,
+          "pct_str": "+2.76%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "watch",
+          "status_text": "→ 观望 (需≥3.00%)",
+          "has_auc": true,
+          "auc_amt": 2.03,
+          "auc_ok": null,
+          "prev_auc_bn": 2.0315,
+          "auc_ratio": 1.0
+        },
+        {
+          "label": "5·青山纸业",
+          "ts_code": "600103.SH",
+          "pct": 10.000000000000009,
+          "pct_str": "+10.00%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 0.44,
+          "auc_ok": null,
+          "prev_auc_bn": 0.4414,
+          "auc_ratio": 1.0
+        }
+      ]
+    },
+    {
+      "title": "国产芯片（龙周期：首板发酵·3.5节：低吸窗口）",
+      "switch_eval": {
+        "required": 2,
+        "auto_ok_count": 1,
+        "pool_ok": true,
+        "pool_detail": "5/5只≥+3.0%",
+        "checks": [
+          {
+            "desc": "板块排名前8（人工）",
+            "auto": false,
+            "pass": null
+          },
+          {
+            "desc": "池内≥2只≥+3.0%  当前5只",
+            "auto": true,
+            "pass": true
+          },
+          {
+            "desc": "封单/龙头确认（人工）",
+            "auto": false,
+            "pass": null
+          }
+        ]
+      },
+      "stocks": [
+        {
+          "label": "1·泰嘉股份",
+          "ts_code": "002843.SZ",
+          "pct": 9.984276729559749,
+          "pct_str": "+9.98%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 0.51,
+          "auc_ok": null,
+          "prev_auc_bn": 0.5075,
+          "auc_ratio": 1.0
+        },
+        {
+          "label": "2·有研新材",
+          "ts_code": "600206.SH",
+          "pct": 10.004293688278242,
+          "pct_str": "+10.00%",
+          "pct_thr": null,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 0.11,
+          "auc_ok": null,
+          "prev_auc_bn": 0.1064,
+          "auc_ratio": 0.9997
+        },
+        {
+          "label": "3·仁东控股",
+          "ts_code": "002647.SZ",
+          "pct": 10.0095328884652,
+          "pct_str": "+10.01%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 0.19,
+          "auc_ok": null,
+          "prev_auc_bn": 0.1899,
+          "auc_ratio": 1.0
+        },
+        {
+          "label": "4·皖通科技",
+          "ts_code": "002331.SZ",
+          "pct": 10.049019607843146,
+          "pct_str": "+10.05%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 0.0,
+          "auc_ok": null,
+          "prev_auc_bn": 0.0012,
+          "auc_ratio": 0.9612
+        },
+        {
+          "label": "5·华新科技",
+          "ts_code": "301265.SZ",
+          "pct": 19.999999999999996,
+          "pct_str": "+20.00%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 0.02,
+          "auc_ok": null,
+          "prev_auc_bn": 0.0186,
+          "auc_ratio": 1.0004
+        }
+      ]
+    }
+  ],
+  "watch_packages": [
+    {
+      "title": "人工智能",
+      "stocks": [
+        {
+          "label": "1·盛视科技",
+          "ts_code": "002990.SZ",
+          "pct": -3.8272816486751737,
+          "pct_str": "-3.83%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.54,
+          "auc_ok": null,
+          "prev_auc_bn": 0.5358,
+          "auc_ratio": 1.0
+        },
+        {
+          "label": "2·申通快递",
+          "ts_code": "002468.SZ",
+          "pct": -1.105937136204893,
+          "pct_str": "-1.11%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.11,
+          "auc_ok": null,
+          "prev_auc_bn": 0.1125,
+          "auc_ratio": 0.9997
+        },
+        {
+          "label": "3·大胜达",
+          "ts_code": "603687.SH",
+          "pct": -0.831168831168827,
+          "pct_str": "-0.83%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.26,
+          "auc_ok": null,
+          "prev_auc_bn": 0.2647,
+          "auc_ratio": 1.0001
+        },
+        {
+          "label": "4·奥瑞德",
+          "ts_code": "600666.SH",
+          "pct": 0.9873060648801113,
+          "pct_str": "+0.99%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "watch",
+          "status_text": "→ 观望 (需≥3.00%)",
+          "has_auc": true,
+          "auc_amt": 0.65,
+          "auc_ok": null,
+          "prev_auc_bn": 0.6501,
+          "auc_ratio": 1.0
+        },
+        {
+          "label": "5·超讯通信",
+          "ts_code": "603322.SH",
+          "pct": -1.417694933053315,
+          "pct_str": "-1.42%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.25,
+          "auc_ok": null,
+          "prev_auc_bn": 0.2479,
+          "auc_ratio": 0.9999
+        }
+      ]
+    },
+    {
+      "title": "锂电池",
+      "stocks": [
+        {
+          "label": "1·科达利",
+          "ts_code": "002850.SZ",
+          "pct": 0.7317319337908801,
+          "pct_str": "+0.73%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "watch",
+          "status_text": "→ 观望 (需≥3.00%)",
+          "has_auc": true,
+          "auc_amt": 0.17,
+          "auc_ok": null,
+          "prev_auc_bn": 0.1657,
+          "auc_ratio": 0.9999
+        },
+        {
+          "label": "2·龙蟠科技",
+          "ts_code": "603906.SH",
+          "pct": 5.078876490958062,
+          "pct_str": "+5.08%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "ok",
+          "status_text": "✓ 涨幅 (≥3.00%)",
+          "has_auc": true,
+          "auc_amt": 0.5,
+          "auc_ok": null,
+          "prev_auc_bn": 0.5045,
+          "auc_ratio": 1.0001
+        },
+        {
+          "label": "3·大中矿业",
+          "ts_code": "001203.SZ",
+          "pct": -1.8486672398968285,
+          "pct_str": "-1.85%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.14,
+          "auc_ok": null,
+          "prev_auc_bn": 0.137,
+          "auc_ratio": 1.0003
+        },
+        {
+          "label": "4·大胜达",
+          "ts_code": "603687.SH",
+          "pct": -0.831168831168827,
+          "pct_str": "-0.83%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.26,
+          "auc_ok": null,
+          "prev_auc_bn": 0.2647,
+          "auc_ratio": 1.0001
+        },
+        {
+          "label": "5·通鼎互联",
+          "ts_code": "002491.SZ",
+          "pct": 9.980171844018514,
+          "pct_str": "+9.98%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 1.04,
+          "auc_ok": null,
+          "prev_auc_bn": 1.0434,
+          "auc_ratio": 1.0
+        }
+      ]
+    },
+    {
+      "title": "人工智能",
+      "stocks": [
+        {
+          "label": "1·盛视科技",
+          "ts_code": "002990.SZ",
+          "pct": -3.8272816486751737,
+          "pct_str": "-3.83%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.54,
+          "auc_ok": null,
+          "prev_auc_bn": 0.5358,
+          "auc_ratio": 1.0
+        },
+        {
+          "label": "2·申通快递",
+          "ts_code": "002468.SZ",
+          "pct": -1.105937136204893,
+          "pct_str": "-1.11%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.11,
+          "auc_ok": null,
+          "prev_auc_bn": 0.1125,
+          "auc_ratio": 0.9997
+        },
+        {
+          "label": "3·大胜达",
+          "ts_code": "603687.SH",
+          "pct": -0.831168831168827,
+          "pct_str": "-0.83%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.26,
+          "auc_ok": null,
+          "prev_auc_bn": 0.2647,
+          "auc_ratio": 1.0001
+        },
+        {
+          "label": "4·奥瑞德",
+          "ts_code": "600666.SH",
+          "pct": 0.9873060648801113,
+          "pct_str": "+0.99%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "watch",
+          "status_text": "→ 观望 (需≥3.00%)",
+          "has_auc": true,
+          "auc_amt": 0.65,
+          "auc_ok": null,
+          "prev_auc_bn": 0.6501,
+          "auc_ratio": 1.0
+        },
+        {
+          "label": "5·超讯通信",
+          "ts_code": "603322.SH",
+          "pct": -1.417694933053315,
+          "pct_str": "-1.42%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.25,
+          "auc_ok": null,
+          "prev_auc_bn": 0.2479,
+          "auc_ratio": 0.9999
+        }
+      ]
+    },
+    {
+      "title": "锂电池",
+      "stocks": [
+        {
+          "label": "1·科达利",
+          "ts_code": "002850.SZ",
+          "pct": 0.7317319337908801,
+          "pct_str": "+0.73%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "watch",
+          "status_text": "→ 观望 (需≥3.00%)",
+          "has_auc": true,
+          "auc_amt": 0.17,
+          "auc_ok": null,
+          "prev_auc_bn": 0.1657,
+          "auc_ratio": 0.9999
+        },
+        {
+          "label": "2·龙蟠科技",
+          "ts_code": "603906.SH",
+          "pct": 5.078876490958062,
+          "pct_str": "+5.08%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "ok",
+          "status_text": "✓ 涨幅 (≥3.00%)",
+          "has_auc": true,
+          "auc_amt": 0.5,
+          "auc_ok": null,
+          "prev_auc_bn": 0.5045,
+          "auc_ratio": 1.0001
+        },
+        {
+          "label": "3·大中矿业",
+          "ts_code": "001203.SZ",
+          "pct": -1.8486672398968285,
+          "pct_str": "-1.85%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.14,
+          "auc_ok": null,
+          "prev_auc_bn": 0.137,
+          "auc_ratio": 1.0003
+        },
+        {
+          "label": "4·圣阳股份",
+          "ts_code": "002580.SZ",
+          "pct": 7.913669064748197,
+          "pct_str": "+7.91%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "ok",
+          "status_text": "✓ 涨幅 (≥3.00%)",
+          "has_auc": true,
+          "auc_amt": 2.11,
+          "auc_ok": null,
+          "prev_auc_bn": 2.1076,
+          "auc_ratio": 1.0
+        },
+        {
+          "label": "5·通鼎互联",
+          "ts_code": "002491.SZ",
+          "pct": 9.980171844018514,
+          "pct_str": "+9.98%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "sealed",
+          "status_text": "⚠封死",
+          "has_auc": true,
+          "auc_amt": 1.04,
+          "auc_ok": null,
+          "prev_auc_bn": 1.0434,
+          "auc_ratio": 1.0
+        }
+      ]
+    },
+    {
+      "title": "创新药",
+      "stocks": [
+        {
+          "label": "1·哈药股份",
+          "ts_code": "600664.SH",
+          "pct": 2.6378896882494063,
+          "pct_str": "+2.64%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "watch",
+          "status_text": "→ 观望 (需≥3.00%)",
+          "has_auc": true,
+          "auc_amt": 0.32,
+          "auc_ok": null,
+          "prev_auc_bn": 0.3218,
+          "auc_ratio": 0.9999
+        },
+        {
+          "label": "2·华人健康",
+          "ts_code": "301408.SZ",
+          "pct": 2.57298367144978,
+          "pct_str": "+2.57%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "watch",
+          "status_text": "→ 观望 (需≥3.00%)",
+          "has_auc": true,
+          "auc_amt": 0.02,
+          "auc_ok": null,
+          "prev_auc_bn": 0.0211,
+          "auc_ratio": 0.9991
+        },
+        {
+          "label": "3·北大医药",
+          "ts_code": "000788.SZ",
+          "pct": 0.917431192660545,
+          "pct_str": "+0.92%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "watch",
+          "status_text": "→ 观望 (需≥3.00%)",
+          "has_auc": true,
+          "auc_amt": 0.03,
+          "auc_ok": null,
+          "prev_auc_bn": 0.034,
+          "auc_ratio": 0.9997
+        },
+        {
+          "label": "4·金陵药业",
+          "ts_code": "000919.SZ",
+          "pct": -1.005025125628145,
+          "pct_str": "-1.01%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "drop",
+          "status_text": "↘ 低开",
+          "has_auc": true,
+          "auc_amt": 0.06,
+          "auc_ok": null,
+          "prev_auc_bn": 0.0569,
+          "auc_ratio": 1.0001
+        },
+        {
+          "label": "5·瑞康医药",
+          "ts_code": "002589.SZ",
+          "pct": 0.0,
+          "pct_str": "+0.00%",
+          "pct_thr": 3.0,
+          "amt_thr": null,
+          "status_type": "watch",
+          "status_text": "→ 观望 (需≥3.00%)",
+          "has_auc": true,
+          "auc_amt": 0.14,
+          "auc_ok": null,
+          "prev_auc_bn": 0.137,
+          "auc_ratio": 1.0003
+        }
+      ]
+    }
+  ],
+  "updated_at": "2026-04-20T23:19:43",
+  "push_id": 1776698383202076090
+}

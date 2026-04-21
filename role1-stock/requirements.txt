@@ -1,0 +1,13 @@
+# role1-stock / pipeline 运行依赖（与云服务器 Python 环境对齐安装）
+# pip install -r requirements.txt
+
+pandas>=1.5
+requests>=2.28
+
+# Tushare 封装（与服务器一致；若 PyPI 不可用则按服务器上安装方式拷贝 wheel/私有源）
+chinadata
+chinamindata
+
+# 盘中/实时部分脚本使用（按需）
+# playwright>=1.40
+# 安装浏览器内核：playwright install chromium

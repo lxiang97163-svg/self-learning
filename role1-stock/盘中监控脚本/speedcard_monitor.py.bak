@@ -1,0 +1,872 @@
+# -*- coding: utf-8 -*-
+"""
+速查早盘监控（9:15～9:50，每分钟一拍）
+
+- 读取当日或指定的 `outputs/review/速查_YYYY-MM-DD.md`
+- 拉腾讯行情 + 东财概念板块排名（粗）+ 可选 Tushare 竞价快照（9:25 后）
+- 不启用 REALTIME_USE_EM_TOP10；不替代 verify_daily 盘后验证
+- 输出单行中文：事实分句 + 结尾「结论——…」；追加写入 outputs/logs/
+
+可选：正文末尾 `<!-- speedcard-meta: {"key_support":3871.30,"step0":{"huawei":["华为"],"rivals":["芯片","锂电"]}} -->`
+
+用法（在仓库 `jumpingnow_all/盘中监控脚本/` 下）：
+  python3 speedcard_monitor.py                    # 今日速查，进入 9:15～9:50 循环
+  python3 speedcard_monitor.py --once --card ...  # 立即跑一拍（调试）
+  python3 speedcard_monitor.py --once --dump-meta # 写出 JSON 快照到 outputs/cache/
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import random
+import re
+import sys
+import time
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Tuple
+
+# 本目录（speedcard_data）+ 上级 pipeline（_paths、realtime_engine、verify_daily）
+_SELF_DIR = os.path.dirname(os.path.abspath(__file__))
+_PIPELINE_DIR = os.path.normpath(os.path.join(_SELF_DIR, "..", "pipeline"))
+sys.path.insert(0, _PIPELINE_DIR)
+sys.path.insert(0, _SELF_DIR)
+
+from _paths import CACHE_DIR, LOGS_DIR, REVIEW_DIR
+
+from realtime_engine import fetch_stocks, get_indices, parse_card
+
+from speedcard_data import (
+    fetch_concept_boards_sorted,
+    find_board_pct,
+    find_board_rank,
+    merge_key_support,
+    parse_embedded_meta,
+)
+
+_TS = re.compile(r"\*\*(.+?)\*\*\(([\d.]+)\.(SZ|SH)\)")
+
+
+@dataclass
+class BSwitchSpec:
+    """从「切换确认」列表解析；未识别则用速查常见默认。"""
+
+    board_keywords: List[str]
+    max_rank: Optional[int] = 8
+    min_board_pct: Optional[float] = None  # 「或板块涨幅≥x%」
+    or_rank_or_pct: bool = False  # True: 排名 OR 涨幅达标
+    pool_need: int = 2
+    pool_pct: float = 3.0
+    third_manual: bool = True  # 封单/短线侠
+    lead_keywords: List[str] = field(default_factory=list)  # 美能能源 竞价第三项
+    lead_amt_ratio: Optional[float] = None
+    lead_min_pct: Optional[float] = None
+
+
+@dataclass
+class BCandidate:
+    title: str
+    stocks: List[Dict[str, Any]]
+    raw_switch_block: str = ""
+    switch: BSwitchSpec = field(default_factory=BSwitchSpec)
+
+
+@dataclass
+class ParsedCard:
+    content: str
+    path: str
+    struct: dict
+    meta: Dict[str, Any]
+    single_cap_note: str
+    width_names: List[str]
+    wind_name: str
+    wind_code: str
+    wind_prev_amount_bn: Optional[float]
+    key_support: float
+    b_candidates: List[BCandidate]
+    exclude_codes: set
+
+
+def _read_file(path: str) -> str:
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+def parse_caps_first_line(content: str) -> str:
+    m = re.search(r"单票上限[：:]\s*(\d)[～~]?(\d)?\s*成", content)
+    if not m:
+        return "2成"
+    if m.group(2):
+        return f"{m.group(1)}～{m.group(2)}成"
+    return f"{m.group(1)}成"
+
+
+def parse_step0_wind(content: str) -> Tuple[str, str]:
+    m = re.search(
+        r"\*\*(.+?)\*\*\(([\d.]+)\.(SZ|SH)\).*?封单",
+        content,
+        re.DOTALL,
+    )
+    if m:
+        return m.group(1).strip(), f"{m.group(2)}.{m.group(3)}"
+    m2 = _TS.findall(content)
+    for n, c, suf in m2:
+        if "中恒" in n or "电气" in n:
+            return n.strip(), f"{c}.{suf}"
+    return "", ""
+
+
+def parse_wind_prev_amount_bn(content: str) -> Optional[float]:
+    """第零步表：封单额 vs 昨日X.XX亿。"""
+    m = re.search(
+        r"封单额\s+vs\s+昨日([\d.]+)亿|昨日([\d.]+)亿.*?封单|封单.*?昨日([\d.]+)亿",
+        content,
+    )
+    if not m:
+        m = re.search(r"昨日([\d.]+)亿", content[:2500])
+    if not m:
+        return None
+    for g in m.groups():
+        if g:
+            try:
+                return float(g)
+            except ValueError:
+                pass
+    return None
+
+
+def parse_width_tickers_from_step0(content: str) -> List[str]:
+    m = re.search(r"除中恒外仍有(.+?)\s*宽度", content)
+    if not m:
+        return ["康盛股份", "宏和科技", "润建股份"]
+    part = m.group(1)
+    names = re.split(r"[、,/，]", part)
+    return [x.strip() for x in names if x.strip()]
+
+
+def _default_switch_for_title(title: str) -> BSwitchSpec:
+    t = title.lower()
+    if "芯片" in title or "半导体" in title:
+        return BSwitchSpec(
+            board_keywords=["芯片", "半导体"],
+            max_rank=8,
+            pool_need=2,
+            pool_pct=3.0,
+            third_manual=True,
+        )
+    if "美伊" in title or "天然气" in title or "油气" in title:
+        return BSwitchSpec(
+            board_keywords=["天然气", "油气", "页岩气", "燃气", "石油石化"],
+            max_rank=10,
+            min_board_pct=1.2,
+            or_rank_or_pct=True,
+            pool_need=2,
+            pool_pct=2.5,
+            third_manual=False,
+            lead_keywords=["美能能源"],
+            lead_amt_ratio=0.8,
+            lead_min_pct=2.0,
+        )
+    return BSwitchSpec(board_keywords=[], max_rank=None, pool_need=2, pool_pct=3.0)
+
+
+def parse_switch_spec(block: str, title: str) -> BSwitchSpec:
+    spec = _default_switch_for_title(title)
+    # 覆盖：前 N 名
+    m = re.search(r"排名\*?\*?前(\d+)|前(\d+)\s*名|前(\d+)\]", block)
+    if m:
+        for g in m.groups():
+            if g:
+                spec.max_rank = int(g)
+                break
+    m2 = re.search(
+        r"≥\s*(\d+)\s*只.*?≥\+([\d.]+)%|题材内.*?≥(\d+)\s*只.*?≥\+([\d.]+)%",
+        block,
+    )
+    if m2:
+        g = m2.groups()
+        try:
+            spec.pool_need = int(g[0] or g[2])
+            spec.pool_pct = float(g[1] or g[3])
+        except (TypeError, ValueError, IndexError):
+            pass
+    if re.search(r"≥\+([\d.]+)%\s*[）\)]?\s*（|板块当日涨幅", block):
+        mp = re.search(r"板块当日涨幅≥\+([\d.]+)%", block)
+        if mp:
+            try:
+                spec.min_board_pct = float(mp.group(1))
+            except ValueError:
+                pass
+            spec.or_rank_or_pct = True
+    if re.search(r"短线侠|封单前", block):
+        spec.third_manual = True
+    # 美能：竞价额≥昨×0.8
+    m3 = re.search(
+        r"\*\*([^*]+)\*\*.*?竞价额≥昨×([\d.]+)|昨×([\d.]+).*?美能",
+        block,
+    )
+    if m3:
+        if m3.group(1) and "美能" in m3.group(1):
+            spec.lead_keywords = [m3.group(1).strip()]
+        rr = m3.group(2) or m3.group(3)
+        if rr:
+            try:
+                spec.lead_amt_ratio = float(rr)
+            except ValueError:
+                pass
+    m4 = re.search(r"涨幅≥\+([\d.]+)%", block)
+    if m4 and spec.lead_min_pct is None:
+        try:
+            spec.lead_min_pct = float(m4.group(1))
+        except ValueError:
+            pass
+    # 显式「芯片/半导体」（勿覆盖油气支线默认关键词）
+    mk = re.search(
+        r"([\u4e00-\u9fa5/、]+)板块东财|东财.*?([\u4e00-\u9fa5/、]+)板块",
+        block,
+    )
+    if mk and not spec.or_rank_or_pct:
+        raw = (mk.group(1) or mk.group(2) or "").strip()
+        parts = re.split(r"[、/]", raw)
+        kws = [p.strip() for p in parts if p.strip() and len(p.strip()) <= 6]
+        if kws:
+            spec.board_keywords = kws
+    return spec
+
+
+def parse_b_candidates(content: str) -> List[BCandidate]:
+    out: List[BCandidate] = []
+    for m in re.finditer(
+        r"###\s*候选([一二两\d]+)[：:]\s*([^\n]+)",
+        content,
+    ):
+        title = m.group(2).strip()
+        start = m.end()
+        nxt = content.find("\n### ", start)
+        if nxt == -1:
+            nxt = len(content)
+        block = content[start:nxt]
+        stocks = []
+        for line in block.splitlines():
+            mm = re.match(
+                r"\|\s*(\d+)\s*\|\s*\*\*(.+?)\*\*\(([\d.]+)\.(SZ|SH)\)\s*\|",
+                line.strip(),
+            )
+            if mm:
+                stocks.append(
+                    {
+                        "rank": int(mm.group(1)),
+                        "name": mm.group(2).strip(),
+                        "ts_code": f"{mm.group(3)}.{mm.group(4)}",
+                        "role": "",
+                    }
+                )
+        sw = ""
+        sm = re.search(r">\s*\*\*切换确认.*?\*\*", block, re.DOTALL)
+        if sm:
+            sw = block[sm.start() : sm.end() + 400]
+        switch = parse_switch_spec(sw or block, title)
+        out.append(
+            BCandidate(
+                title=title,
+                stocks=stocks,
+                raw_switch_block=sw,
+                switch=switch,
+            )
+        )
+    return out
+
+
+def parse_stock_prev_bn_from_block(block: str, stock_name: str) -> Optional[float]:
+    """表格或切换区「昨X.XX亿」与股票名邻近匹配（粗）。"""
+    if not block or not stock_name:
+        return None
+    i = block.find(stock_name)
+    if i < 0:
+        return None
+    chunk = block[i : i + 400]
+    m = re.search(r"昨([\d.]+)亿", chunk)
+    if m:
+        try:
+            return float(m.group(1))
+        except ValueError:
+            pass
+    return None
+
+
+def parse_exclude_block(content: str) -> set:
+    ex = set()
+    sec = re.search(
+        r"###\s*❌\s*不做.*?\n(.*?)(?=\n###|\n---|\Z)",
+        content,
+        re.DOTALL,
+    )
+    if not sec:
+        return ex
+    for n, c, suf in _TS.findall(sec.group(1)):
+        ex.add(f"{c}.{suf}")
+    return ex
+
+
+def _codes_from_chains(struct: dict) -> set:
+    s = set()
+    for key in ("p1_chain", "p2_chain"):
+        for _a, _b, tc in struct.get(key) or []:
+            s.add(tc)
+    return s
+
+
+def build_parsed_card(card_path: Optional[str]) -> Optional[ParsedCard]:
+    stock_map, sectors, path, struct = parse_card(override_path=card_path)
+    if not stock_map:
+        return None
+    content = _read_file(path)
+    meta = parse_embedded_meta(content)
+    caps = parse_caps_first_line(content)
+    wind_name, wind_code = parse_step0_wind(content)
+    width_names = parse_width_tickers_from_step0(content)
+    ks_struct = float(struct.get("key_support") or 3870)
+    ks = merge_key_support(meta, ks_struct, content)
+    wprev = parse_wind_prev_amount_bn(content)
+    b = parse_b_candidates(content)
+    ex = parse_exclude_block(content)
+    return ParsedCard(
+        content=content,
+        path=path,
+        struct=struct,
+        meta=meta,
+        single_cap_note=caps,
+        width_names=width_names,
+        wind_name=wind_name,
+        wind_code=wind_code,
+        wind_prev_amount_bn=wprev,
+        key_support=ks,
+        b_candidates=b,
+        exclude_codes=ex,
+    )
+
+
+def rows_to_code_map(rows) -> Dict[str, Tuple]:
+    out = {}
+    for r in rows:
+        if len(r) >= 5:
+            out[str(r[1])] = r
+    return out
+
+
+def sh_price_from_indices(indices) -> Optional[float]:
+    for name, code, price, pct in indices:
+        if code == "000001":
+            return float(price)
+    return None
+
+
+def try_fetch_auction_today() -> Optional[Dict[str, Dict]]:
+    """拉取竞价数据，5秒超时防止卡住。"""
+    import threading
+    result = [None]
+    
+    def fetch_in_thread():
+        try:
+            from verify_daily import fetch_auction
+            td = time.strftime("%Y%m%d")
+            result[0] = fetch_auction(td)
+        except Exception:
+            result[0] = None
+    
+    thread = threading.Thread(target=fetch_in_thread, daemon=True)
+    thread.start()
+    thread.join(timeout=1.0)
+    return result[0] if result[0] is not None else None
+
+
+def count_width_ok(
+    width_names: List[str],
+    stock_map: Dict[str, str],
+    code_to_row: Dict[str, Tuple],
+    threshold: float = 3.0,
+) -> Tuple[int, int]:
+    hits = 0
+    total = 0
+    for nm in width_names:
+        code_full = None
+        for k, v in stock_map.items():
+            if nm in v or v in nm:
+                code_full = k
+                break
+        if not code_full:
+            continue
+        num = code_full.split(".")[0]
+        row = code_to_row.get(num)
+        if not row:
+            continue
+        total += 1
+        if float(row[3]) >= threshold:
+            hits += 1
+    return hits, total
+
+
+def eval_b_pool_strength(
+    stocks: List[dict], code_to_row: Dict[str, Tuple], pct_min: float
+) -> Tuple[int, int]:
+    ok = 0
+    n = 0
+    for s in stocks:
+        num = s["ts_code"].split(".")[0]
+        row = code_to_row.get(num)
+        if not row:
+            continue
+        n += 1
+        if float(row[3]) >= pct_min:
+            ok += 1
+    return ok, n
+
+
+def health_chain(
+    chain: List[tuple],
+    checks: List[Tuple[str, float]],
+    code_to_row: Dict[str, Tuple],
+) -> Tuple[int, int]:
+    ok = 0
+    for name_need, thr in checks:
+        for _t, nm, tc in chain:
+            if name_need in nm:
+                num = tc.split(".")[0]
+                row = code_to_row.get(num)
+                if row and float(row[3]) > thr:
+                    ok += 1
+                break
+    return ok, len(checks)
+
+
+def health_p1(struct: dict, code_to_row: Dict[str, Tuple]) -> Tuple[int, int]:
+    return health_chain(
+        struct.get("p1_chain") or [],
+        [
+            ("圣阳股份", 0.0),
+            ("宏和科技", -3.0),
+            ("铭普光磁", 3.0),
+        ],
+        code_to_row,
+    )
+
+
+def health_p2(struct: dict, code_to_row: Dict[str, Tuple]) -> Tuple[int, int]:
+    return health_chain(
+        struct.get("p2_chain") or [],
+        [
+            ("盛新锂能", 0.0),
+            ("中材科技", -3.0),
+            ("大中矿业", 3.0),
+        ],
+        code_to_row,
+    )
+
+
+def count_other_theme_hot(
+    stock_map: Dict[str, str],
+    code_to_row: Dict[str, Tuple],
+    exclude_codes: set,
+    wind_code: str,
+    pct_line: float = 5.0,
+) -> int:
+    """第零步第4行：其它票竞价涨幅≥pct_line（排除主线链与❌不做）。"""
+    ex = set(exclude_codes)
+    if wind_code:
+        ex.add(wind_code)
+    n = 0
+    for ts_c in stock_map:
+        if ts_c in ex:
+            continue
+        num = ts_c.split(".")[0]
+        row = code_to_row.get(num)
+        if row and float(row[3]) >= pct_line:
+            n += 1
+    return n
+
+
+def eval_b_switch_auto(
+    bc: BCandidate,
+    spec: BSwitchSpec,
+    em_rows: List[Tuple[str, float]],
+    em_total: int,
+    auc_map: Optional[Dict[str, Dict]],
+    code_to_row: Dict[str, Tuple],
+    card_content: str,
+) -> Tuple[int, int, List[str]]:
+    """返回 (命中数, 自动化项数, 说明片段)。"""
+    parts: List[str] = []
+    hits = 0
+    max_auto = 2 if spec.third_manual else 3
+
+    board_ok = False
+    if spec.board_keywords and em_rows:
+        rk = find_board_rank(em_rows, spec.board_keywords)
+        bp = find_board_pct(em_rows, spec.board_keywords)
+        if spec.or_rank_or_pct and spec.min_board_pct is not None:
+            cond_r = (
+                rk is not None
+                and spec.max_rank is not None
+                and rk <= spec.max_rank
+            )
+            cond_p = bp is not None and bp >= spec.min_board_pct
+            board_ok = bool(cond_r or cond_p)
+            bp_s = f"{bp:+.2f}%" if bp is not None else "—"
+            parts.append(
+                f"板块{spec.board_keywords[0]}…名次{rk or '—'}/{em_total or len(em_rows)} {bp_s}"
+            )
+        elif spec.max_rank and rk is not None:
+            board_ok = rk <= spec.max_rank
+            parts.append(f"板块名次{rk}/{em_total or len(em_rows)}")
+        elif spec.max_rank:
+            parts.append("板块名次—")
+    if board_ok:
+        hits += 1
+
+    okn, _ = eval_b_pool_strength(bc.stocks, code_to_row, spec.pool_pct)
+    pool_ok = okn >= spec.pool_need
+    if pool_ok:
+        hits += 1
+    parts.append(f"池内≥{spec.pool_pct}%:{okn}只")
+
+    if not spec.third_manual and spec.lead_keywords and auc_map:
+        for s in bc.stocks:
+            for kw in spec.lead_keywords:
+                if kw in s["name"]:
+                    a = auc_map.get(s["ts_code"])
+                    if a:
+                        pct = a.get("pct") or 0
+                        amt = a.get("amount_bn") or 0
+                        ok_lead = spec.lead_min_pct is None or pct >= spec.lead_min_pct
+                        if spec.lead_amt_ratio is not None:
+                            prev_bn = parse_stock_prev_bn_from_block(
+                                card_content, s["name"]
+                            )
+                            if prev_bn and prev_bn > 0:
+                                ok_lead = ok_lead and amt >= prev_bn * spec.lead_amt_ratio
+                        if ok_lead and amt > 0:
+                            hits += 1
+                            parts.append(f"{kw}竞价{pct:+.2f}%额{amt:.2f}亿")
+                    break
+
+    auto_used = 2 if spec.third_manual else min(3, max_auto)
+    return hits, auto_used, parts
+
+
+def step0_signal_states(
+    em_rows: List[Tuple[str, float]],
+    em_total: int,
+    meta: Dict[str, Any],
+    auc_map: Optional[Dict[str, Dict]],
+    wind_code: str,
+    wind_prev_bn: Optional[float],
+    width_hits: int,
+    width_total: int,
+    other_hot_n: int,
+    hm: int,
+) -> Tuple[List[str], List[str], List[str]]:
+    """
+    返回三态列表 s1,s2,s3,s4 每项为 'ok'|'fail'|'fuzzy'
+    """
+    step0_cfg = (meta.get("step0") or {}) if meta else {}
+    hw_kw = step0_cfg.get("huawei") or step0_cfg.get("main_keywords") or ["华为"]
+    rival_kw = step0_cfg.get("rivals") or ["芯片", "锂电"]
+
+    def _tri(hr: Optional[int], total: int) -> str:
+        if hr is None or total <= 0:
+            return "fuzzy"
+        third = max(1, total // 3)
+        half = max(1, total // 2)
+        chip_r = find_board_rank(em_rows, ["芯片", "半导体"])
+        li_r = find_board_rank(em_rows, ["锂电", "锂电池"])
+        overt = False
+        for r in (chip_r, li_r):
+            if r is not None and hr is not None and r < hr:
+                overt = True
+                break
+        if hr > half or overt:
+            return "fail"
+        if hr <= third:
+            return "ok"
+        return "fuzzy"
+
+    hr = find_board_rank(em_rows, list(hw_kw)) if em_rows else None
+    s1 = _tri(hr, em_total or len(em_rows))
+
+    s2 = "fuzzy"
+    if hm < 925:
+        s2 = "fuzzy"
+    elif auc_map and wind_code:
+        a = auc_map.get(wind_code)
+        if a and wind_prev_bn and wind_prev_bn > 0:
+            amt = a.get("amount_bn") or 0
+            if amt >= wind_prev_bn * 0.7:
+                s2 = "ok"
+            elif amt < wind_prev_bn * 0.5:
+                s2 = "fail"
+            else:
+                s2 = "fuzzy"
+        elif a and (not wind_prev_bn):
+            s2 = "fuzzy"
+    else:
+        s2 = "fuzzy"
+
+    if width_total > 0:
+        s3 = "ok" if width_hits >= 2 else "fail"
+    else:
+        s3 = "fuzzy"
+
+    s4 = "ok" if other_hot_n < 2 else "fail"
+
+    return [s1, s2, s3, s4], [hw_kw, rival_kw], [str(hr or "—"), str(wind_prev_bn or "—")]
+
+
+def decide_mode(
+    s123: List[str],
+) -> Tuple[str, str]:
+    """
+    前 3 条：全 ok -> A；≥2 fail -> B；其余模糊。
+    """
+    first3 = s123[:3]
+    fails = sum(1 for x in first3 if x == "fail")
+    oks = sum(1 for x in first3 if x == "ok")
+    if fails >= 2:
+        return "选择模式B", "B"
+    if oks == 3:
+        return "选择模式A", "A"
+    return "信号模糊·偏空仓", "FUZZY"
+
+
+def build_one_line(
+    pc: ParsedCard,
+    sh_price: Optional[float],
+    ks: float,
+    fact_parts: List[str],
+    mode_label: str,
+    actions: List[str],
+    hm: int,
+) -> str:
+    tail = f"结论——{mode_label}"
+    if actions:
+        tail += "；" + "；".join(actions)
+    else:
+        tail += "；观望"
+    return (
+        f"{hm // 100:02d}:{hm % 100:02d}——"
+        + "；".join(fact_parts)
+        + "；"
+        + tail
+        + "；"
+    )
+
+
+def run_tick(pc: ParsedCard, hm: int) -> str:
+    ks = pc.key_support
+    stock_map = pc.struct.get("stock_map") or {}
+    indices = get_indices(None)
+    rows = fetch_stocks(stock_map, None)
+    code_to_row = rows_to_code_map(rows)
+    sh = sh_price_from_indices(indices)
+
+    auc = try_fetch_auction_today() if hm >= 925 else None
+
+    em_rows, em_total = fetch_concept_boards_sorted(500)
+
+    wh, wt = count_width_ok(pc.width_names, stock_map, code_to_row, 3.0)
+    main_codes = _codes_from_chains(pc.struct)
+    other_hot = count_other_theme_hot(
+        stock_map,
+        code_to_row,
+        main_codes | pc.exclude_codes,
+        pc.wind_code,
+        5.0,
+    )
+
+    s_all, _kw, _dbg = step0_signal_states(
+        em_rows,
+        em_total,
+        pc.meta,
+        auc,
+        pc.wind_code,
+        pc.wind_prev_amount_bn,
+        wh,
+        wt,
+        other_hot,
+        hm,
+    )
+    mode_label, mode_key = decide_mode(s_all)
+
+    fact_parts: List[str] = []
+    if sh is not None:
+        fact_parts.append(
+            ("上证已破速查支撑" if sh < ks else "上证未破速查支撑")
+            + f"(现价{sh:.2f} vs {ks:.2f})"
+        )
+
+    hr = find_board_rank(em_rows, pc.meta.get("step0", {}).get("huawei") or ["华为"])
+    fact_parts.append(
+        f"华为概念板块名次约{hr or '—'}/{em_total or len(em_rows)}"
+        f"(东财概念·粗)"
+    )
+    fact_parts.append(
+        f"第零步[{s_all[0]}/{s_all[1]}/{s_all[2]}/{s_all[3]}]"
+        f"宽{wh}/{wt}它题材≥+5%:{other_hot}只"
+    )
+
+    b_reports: List[str] = []
+    actions: List[str] = []
+    cap_b = "≤1.5成"
+    if "1" in pc.single_cap_note and "成" in pc.single_cap_note:
+        cap_b = f"≤{pc.single_cap_note.replace('～', '-')}"
+
+    b_confirmed: List[BCandidate] = []
+    for bc in pc.b_candidates:
+        spec = bc.switch
+        hhit, auton, sub = eval_b_switch_auto(
+            bc, spec, em_rows, em_total, auc, code_to_row, pc.content
+        )
+        need = 2
+        ok_disp = min(hhit, auton)
+        b_reports.append(
+            f"{bc.title}切换确认{ok_disp}/{auton}项(自动化)"
+            + (f" [{';'.join(sub[:2])}]" if sub else "")
+        )
+        if hhit >= need:
+            b_confirmed.append(bc)
+
+    if mode_key == "B":
+        if b_confirmed:
+            bc0 = b_confirmed[0]
+            lead = bc0.stocks[0] if bc0.stocks else None
+            if lead and lead["ts_code"] not in pc.exclude_codes:
+                actions.append(f"{lead['name']}可上（{cap_b}）")
+        else:
+            actions.append("B候选均未确认")
+
+    h1_ok, h1_tot = health_p1(pc.struct, code_to_row)
+    h2_ok, h2_tot = health_p2(pc.struct, code_to_row)
+
+    if mode_key == "A":
+        if h1_ok < 2:
+            mode_label = "选择模式A(华为健康度不足)"
+            actions.append("龙二以下慎追")
+        elif h2_ok < 2:
+            mode_label = "选择模式A(锂电健康度不足)"
+            actions.append("锂电龙一轻仓或观望")
+
+    if mode_key == "FUZZY":
+        actions.append("等方向明朗")
+
+    fact_parts.extend(b_reports)
+
+    line = build_one_line(pc, sh, ks, fact_parts, mode_label, actions, hm)
+    return line
+
+
+def build_snapshot_dict(
+    pc: ParsedCard,
+    line: str,
+    hm: int,
+    extra: Optional[Dict[str, Any]] = None,
+) -> dict:
+    out: Dict[str, Any] = {
+        "time_hm": hm,
+        "card_path": pc.path,
+        "key_support": pc.key_support,
+        "wind_code": pc.wind_code,
+        "wind_prev_amount_bn": pc.wind_prev_amount_bn,
+        "meta_embedded": pc.meta,
+        "line": line,
+    }
+    if extra:
+        out.update(extra)
+    return out
+
+
+def append_log(date_str: str, text: str) -> None:
+    p = os.path.join(LOGS_DIR, f"speedcard_monitor_{date_str}.log")
+    os.makedirs(os.path.dirname(os.path.abspath(p)), exist_ok=True)
+    with open(p, "a", encoding="utf-8") as f:
+        f.write(text + "\n")
+
+
+def in_window(hm: int) -> bool:
+    return 915 <= hm <= 950
+
+
+def wait_until_915():
+    while True:
+        t = time.localtime()
+        hm = t.tm_hour * 100 + t.tm_min
+        if hm >= 915:
+            return
+        time.sleep(5)
+
+
+def main():
+    ap = argparse.ArgumentParser(description="速查 9:15～9:50 早盘监控")
+    ap.add_argument("--card", type=str, default="", help="速查 md 路径")
+    ap.add_argument(
+        "--once",
+        action="store_true",
+        help="立即跑一拍并退出（不校验是否在 9:15～9:50）",
+    )
+    ap.add_argument(
+        "--dump-meta",
+        action="store_true",
+        help="将快照写入 outputs/cache/speedcard_snapshot_YYYY-MM-DD.json",
+    )
+    args = ap.parse_args()
+
+    pc = build_parsed_card(args.card.strip() or None)
+    if not pc:
+        print("未找到速查文件", file=sys.stderr)
+        sys.exit(1)
+
+    date_str = time.strftime("%Y-%m-%d")
+
+    if args.once:
+        hm = time.localtime().tm_hour * 100 + time.localtime().tm_min
+        line = run_tick(pc, hm)
+        print(line)
+        append_log(date_str, line)
+        if args.dump_meta:
+            snap = build_snapshot_dict(
+                pc,
+                line,
+                hm,
+                extra={"note": "东财概念板块为快照；竞价封单等见本目录 README.md"},
+            )
+            outp = os.path.join(
+                str(CACHE_DIR), f"speedcard_snapshot_{date_str}.json"
+            )
+            with open(outp, "w", encoding="utf-8") as f:
+                json.dump(snap, f, ensure_ascii=False, indent=2)
+            print(f"[meta] 已写入 {outp}", file=sys.stderr)
+        return
+
+    print(f"已加载速查: {pc.path} | 9:15～9:50 每分钟一条；Ctrl+C 结束")
+    wait_until_915()
+
+    while True:
+        t = time.localtime()
+        hm = t.tm_hour * 100 + t.tm_min
+        if hm > 950:
+            print(time.strftime("%H:%M:%S"), "已逾9:50，结束。")
+            break
+        if hm < 915:
+            time.sleep(3)
+            continue
+        try:
+            line = run_tick(pc, hm)
+            print(line)
+            append_log(date_str, line)
+        except Exception as e:
+            err = f"{time.strftime('%H:%M:%S')} 异常: {e}"
+            print(err, file=sys.stderr)
+            append_log(date_str, err)
+        time.sleep(60 + random.uniform(2, 8))
+
+
+if __name__ == "__main__":
+    main()

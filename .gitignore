@@ -205,3 +205,11 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# role1-stock：复盘 pipeline 大型可重建缓存（避免推 GitHub 体积过大）
+role1-stock/outputs/cache/.review_api_cache/
+role1-stock/outputs/cache/.review_profile/
+
+# role1-stock：盘中监控仪表盘（npm 依赖本地安装）
+node_modules/
+role1-stock/**/node_modules/
