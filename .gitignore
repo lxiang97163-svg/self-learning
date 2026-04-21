@@ -194,6 +194,11 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+# Node / Next.js（勿提交依赖与构建产物）
+node_modules/
+.next/
+out/
+
 # Cursor
 #  Cursor is an AI-powered code editor. `.cursorignore` specifies files/directories to
 #  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data
