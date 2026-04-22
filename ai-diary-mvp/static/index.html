@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>拾光 · 把照片变成故事</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="logo">拾光</div>
+      <p class="tagline">把你的照片，变成只属于你的故事</p>
+    </header>
+
+    <main class="main">
+
+      <!-- 上传区域 -->
+      <section class="card upload-card" id="uploadCard">
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="3"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <path d="M21 15l-5-5L5 21"/>
+            </svg>
+          </div>
+          <p class="upload-title">点击上传照片</p>
+          <p class="upload-hint">或将照片拖拽至此 · 最多20张 · 支持 JPG PNG WEBP</p>
+          <input type="file" id="fileInput" multiple accept="image/*" hidden />
+        </div>
+      </section>
+
+      <!-- 照片网格 -->
+      <section class="card photos-card" id="photosCard" hidden>
+        <div class="section-header">
+          <h2 class="section-title">你的照片</h2>
+          <button class="link-btn" id="addMoreBtn">+ 继续添加</button>
+          <input type="file" id="addMoreInput" multiple accept="image/*" hidden />
+        </div>
+        <p class="section-hint">可以为每张照片添加备注，帮助 AI 理解内容（不填也可以）</p>
+        <div class="photo-grid" id="photoGrid"></div>
+      </section>
+
+      <!-- 文风选择 + 生成 -->
+      <section class="card controls-card" id="controlsCard" hidden>
+        <h2 class="section-title">选择文风</h2>
+        <div class="style-selector" id="styleSelector">
+          <button class="style-btn active" data-style="healing">
+            <span class="style-emoji">🌿</span>
+            <span class="style-name">治愈风</span>
+            <span class="style-desc">温暖细腻</span>
+          </button>
+          <button class="style-btn" data-style="literary">
+            <span class="style-emoji">🌸</span>
+            <span class="style-name">文艺风</span>
+            <span class="style-desc">诗意留白</span>
+          </button>
+          <button class="style-btn" data-style="humorous">
+            <span class="style-emoji">✨</span>
+            <span class="style-name">幽默风</span>
+            <span class="style-desc">轻松有趣</span>
+          </button>
+        </div>
+        <button class="generate-btn" id="generateBtn">
+          <span class="btn-text">生成我的故事</span>
+          <span class="btn-loading" hidden>
+            <span class="spinner"></span>生成中…
+          </span>
+        </button>
+      </section>
+
+      <!-- 结果 -->
+      <section class="card result-card" id="resultCard" hidden>
+        <div class="result-header">
+          <h2 class="section-title">你的故事</h2>
+          <span class="result-tag" id="resultStyleTag"></span>
+        </div>
+        <div class="result-text" id="resultText"></div>
+        <div class="result-actions">
+          <button class="btn-outline" id="copyBtn">复制文字</button>
+          <button class="btn-outline" id="regenerateBtn">重新生成</button>
+          <button class="btn-primary" id="resetBtn">开始新的</button>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer">
+      <p>拾光 · MVP 内测版 · 照片仅用于生成，不做存储</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
