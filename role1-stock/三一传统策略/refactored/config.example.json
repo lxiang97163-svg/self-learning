@@ -1,0 +1,10 @@
+{
+  "tushare_token": "your-tushare-token-here",
+  "tushare_min_token": "your-tushare-min-token-here",
+  "pushplus_token": "your-pushplus-token-or-null",
+  "dxx_cookies": {
+    "PHPSESSID": "your-phpsessid-cookie",
+    "server_name_session": "your-server-name-session-cookie"
+  },
+  "enable_push": true
+}

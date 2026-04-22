@@ -1,0 +1,114 @@
+{
+  "updated_at": "2026-04-22T12:05:09",
+  "trade_date": "2026-04-22",
+  "themes_strength": [
+    {
+      "name": "商业航天",
+      "avg_pct": 3.2,
+      "leaders": [
+        "300930.SZ",
+        "688456.SH"
+      ]
+    },
+    {
+      "name": "人形机器人",
+      "avg_pct": 2.1,
+      "leaders": [
+        "300433.SZ",
+        "688169.SH"
+      ]
+    },
+    {
+      "name": "低空经济",
+      "avg_pct": 0.8,
+      "leaders": [
+        "002803.SZ"
+      ]
+    }
+  ],
+  "market_sentiment": {
+    "score": 2.4,
+    "label": "偏暖",
+    "note": "竞价综合指标：上涨家数 > 下跌家数"
+  },
+  "core_intersection": [
+    {
+      "code": "300930.SZ",
+      "name": "鸿图科技",
+      "sector": "商业航天",
+      "pct_chg": 3.2,
+      "rank": 1,
+      "note": "进价第一 + 换手第一 + 涨幅第一 同时命中"
+    }
+  ],
+  "recommendations": [
+    {
+      "code": "300930.SZ",
+      "name": "鸿图科技",
+      "pct": 3.2,
+      "rank": 1,
+      "circ_mv": 42.5,
+      "reason": "竞价三一：进价第一+换手第一+题材主线龙头",
+      "concept": "商业航天",
+      "concept_open_pct": 3.1,
+      "concept_limitup_count": 3,
+      "reason_tag": "sanyi",
+      "small_trap": false
+    },
+    {
+      "code": "002920.SZ",
+      "name": "德赛西威",
+      "pct": 2.8,
+      "rank": 2,
+      "circ_mv": 86.3,
+      "reason": "竞价三一备选：题材排名第二，高开量能充分",
+      "concept": "商业航天",
+      "concept_open_pct": 3.1,
+      "concept_limitup_count": 3,
+      "reason_tag": "sanyi",
+      "small_trap": false
+    },
+    {
+      "code": "300776.SZ",
+      "name": "帝尔激光",
+      "pct": 9.8,
+      "rank": 3,
+      "circ_mv": 8.2,
+      "reason": "小盘陷阱警告：流通 < 20 亿且换手 > 20%",
+      "concept": "人形机器人",
+      "concept_open_pct": 2.0,
+      "concept_limitup_count": 2,
+      "reason_tag": "sanyi",
+      "small_trap": true
+    }
+  ],
+  "fengdan_top5": [
+    {
+      "code": "300930.SZ",
+      "name": "鸿图科技",
+      "seal_amount_yi": 6.3,
+      "lu_desc": "卫星通信+商业航天概念",
+      "concept_auction_top3": [
+        {
+          "code": "300930.SZ",
+          "name": "鸿图科技",
+          "amount_wan": 6300
+        }
+      ]
+    },
+    {
+      "code": "300433.SZ",
+      "name": "蓝思科技",
+      "seal_amount_yi": 3.1,
+      "lu_desc": "人形机器人零部件供应商",
+      "concept_auction_top3": [
+        {
+          "code": "300433.SZ",
+          "name": "蓝思科技",
+          "amount_wan": 3100
+        }
+      ]
+    }
+  ],
+  "notes": "Mock 数据（feeder.py --mock）。研究参考，不构成投资建议。"
+}

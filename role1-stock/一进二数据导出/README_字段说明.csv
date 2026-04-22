@@ -1,0 +1,8 @@
+﻿说明
+01_首板二板联合池：T-1 日 limit_list_d 筛 strict 首板(limit_times=1) ∪ strict 二板(limit_times=2) + 主板 + 非ST
+02_竞价原始：T 日 stk_auction 池内标的
+03_前日市值：T-1 daily_basic（circ_mv 等）
+04_历史特征：并行 daily 汇总的 prev_5d/prev_10d/high20/high60
+05_当日收盘：T 日 daily 池内
+06_分析宽表：pool 与 02–04 合并 + pct_rank/turn_rank/amt_rank 及对应 ratio + 收盘与相对竞价涨跌
+00_合并：各日 06 纵向合并

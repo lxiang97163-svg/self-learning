@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sort -k9)",
+      "Bash(xargs ls *)",
+      "Bash(python3 -m json.tool)",
+      "Bash(python3 *)",
+      "Bash(npx skills *)",
+      "Bash(python -c ' *)",
+      "Bash(gh api *)",
+      "Bash(mkdir -p \"e:/李响git工作空间/self-learning/teach_lx_source\")",
+      "Bash(cp \"C:/Users/Administrator/.claude/skills/frontend-design/SKILL.md\" \"e:/李响git工作空间/self-learning/teach_lx_source/\")",
+      "Skill(tutor-setup)",
+      "Skill(tutor-setup:*)",
+      "Bash(python -c \"import sys; print\\(sys.executable\\)\")",
+      "Bash(python 928_push.py --date 20260421)",
+      "Skill(teach_lx)",
+      "Skill(teach_lx:*)",
+      "Bash(start \"\" \"E:\\\\李响git工作空间\\\\self-learning\\\\role2-self\\\\portfolio.html\")",
+      "Bash(npx playwright *)"
+    ]
+  }
+}

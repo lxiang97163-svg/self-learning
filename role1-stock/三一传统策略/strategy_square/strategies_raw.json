@@ -1,0 +1,6 @@
+{
+  "collected_at": null,
+  "source": "https://backtest.10jqka.com.cn/backtest/app.html#/strategysquare",
+  "items": [],
+  "note": "方案 1（WebFetch 直取 HTML）被当前环境策略拒绝，方案 2（推断 XHR API）同样依赖 WebFetch，因此采集链路未能执行。当前交付以方案 3（备用 Playwright 脚本 + 手工候选池）为主。用户可在本地安装 playwright（见 collect_strategies.py 顶部注释）后运行 `python collect_strategies.py --pages 5` 来真实采集页面内容，脚本会覆写本文件。"
+}

@@ -1,0 +1,7 @@
+{
+  "collected_at": null,
+  "source": "https://backtest.10jqka.com.cn/backtest/app.html#/strategysquare",
+  "disclaimer": "所有收益率为策略广场历史回测数据，不等于实盘收益；历史回测不代表未来表现；本数据仅供个人研究，不构成投资建议。",
+  "items": [],
+  "note": "请运行 collect_strategies.py --pages 5 填充真实数据"
+}

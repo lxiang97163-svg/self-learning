@@ -1,0 +1,132 @@
+{
+  "updated_at": "2026-04-22T14:18:06",
+  "trade_date": "2026-04-22",
+  "phase": "intraday",
+  "indices": [
+    {
+      "code": "000001",
+      "name": "上证指数",
+      "price": 4094.33,
+      "pct": 0.23,
+      "key_support": 3280.0,
+      "ok": true,
+      "ifthen": "若跌破 3280 → 仓位降至 ≤4 分（指数维度）；若站上 3360 → 可加仓"
+    },
+    {
+      "code": "399001",
+      "name": "深证成指",
+      "price": 15126.19,
+      "pct": 0.96,
+      "key_support": null,
+      "ok": null,
+      "ifthen": ""
+    },
+    {
+      "code": "399006",
+      "name": "创业板指",
+      "price": 3739.06,
+      "pct": 1.36,
+      "key_support": 1920.0,
+      "ok": true,
+      "ifthen": "低开幅度 > 1% 且不回补 → 持仓低开三思路启动"
+    },
+    {
+      "code": "000688",
+      "name": "科创50",
+      "price": 1442.71,
+      "pct": 1.12,
+      "key_support": 950.0,
+      "ok": true,
+      "ifthen": ""
+    }
+  ],
+  "themes": [
+    {
+      "name": "商业航天",
+      "avg_pct": -0.33,
+      "leaders": [
+        "300930.SZ",
+        "688456.SH"
+      ],
+      "leader_data": [
+        {
+          "code": "300930.SZ",
+          "pct": -0.1,
+          "amount_yi": 0.1802
+        },
+        {
+          "code": "688456.SH",
+          "pct": -0.55,
+          "amount_yi": 1.3076
+        }
+      ]
+    },
+    {
+      "name": "人形机器人",
+      "avg_pct": -0.23,
+      "leaders": [
+        "300433.SZ",
+        "688169.SH"
+      ],
+      "leader_data": [
+        {
+          "code": "300433.SZ",
+          "pct": 1.04,
+          "amount_yi": 19.3216
+        },
+        {
+          "code": "688169.SH",
+          "pct": -1.5,
+          "amount_yi": 4.4534
+        }
+      ]
+    },
+    {
+      "name": "低空经济",
+      "avg_pct": 2.52,
+      "leaders": [
+        "002803.SZ"
+      ],
+      "leader_data": [
+        {
+          "code": "002803.SZ",
+          "pct": 2.52,
+          "amount_yi": 3.8292
+        }
+      ]
+    }
+  ],
+  "recs_live": [
+    {
+      "code": "300930.SZ",
+      "name": "鸿图科技",
+      "concept": "商业航天",
+      "auction_pct": 3.2,
+      "live_pct": -0.1,
+      "live_amount_yi": 0.1802,
+      "reason": "竞价三一：进价第一+换手第一+题材主线龙头",
+      "small_trap": false
+    },
+    {
+      "code": "002920.SZ",
+      "name": "德赛西威",
+      "concept": "商业航天",
+      "auction_pct": 2.8,
+      "live_pct": 1.06,
+      "live_amount_yi": 9.1305,
+      "reason": "竞价三一备选：题材排名第二，高开量能充分",
+      "small_trap": false
+    },
+    {
+      "code": "300776.SZ",
+      "name": "帝尔激光",
+      "concept": "人形机器人",
+      "auction_pct": 9.8,
+      "live_pct": 9.9,
+      "live_amount_yi": 21.4521,
+      "reason": "小盘陷阱警告：流通 < 20 亿且换手 > 20%",
+      "small_trap": true
+    }
+  ],
+  "notes": "腾讯行情实时数据 (2026-04-22T14:18:06)。研究参考，不构成投资建议。"
+}

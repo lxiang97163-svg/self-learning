@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>三一传统策略 · 盯盘看板</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --surface: #0f172a;
+      --text: #e5e7eb;
+    }
+    html, body { background: var(--surface); color: var(--text); }
+    .card { background: #111827; border: 1px solid #1f2937; border-radius: 10px; }
+    .chip { padding: 2px 8px; border-radius: 999px; font-size: 11px; }
+    .chip-info { background: #1e3a8a; color: #bfdbfe; }
+    .chip-warn { background: #78350f; color: #fde68a; }
+    .chip-critical { background: #7f1d1d; color: #fecaca; }
+    .chip-user { background: #065f46; color: #a7f3d0; }
+    .chip-system { background: #374151; color: #d1d5db; }
+    .flash { animation: flash 1.2s ease-out; }
+    @keyframes flash { from { background: #334155; } to { background: transparent; } }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- Header -->
+  <header class="sticky top-0 z-10 bg-slate-900/95 backdrop-blur border-b border-slate-800">
+    <div class="max-w-[1600px] mx-auto px-4 py-3 flex flex-wrap items-center gap-4">
+      <div class="text-lg font-semibold text-white">三一传统策略 · 盯盘看板</div>
+      <div id="today" class="text-sm text-slate-300">加载中...</div>
+
+      <div class="flex items-center gap-2 ml-4 text-sm">
+        <span class="text-slate-400">四维打分:</span>
+        <label class="flex items-center gap-1">指数
+          <input id="score-index" type="number" min="0" max="4" step="1"
+            class="w-12 bg-slate-800 border border-slate-700 rounded px-1 py-0.5 text-white" />
+        </label>
+        <label class="flex items-center gap-1">情绪
+          <input id="score-sentiment" type="number" min="0" max="3" step="1"
+            class="w-12 bg-slate-800 border border-slate-700 rounded px-1 py-0.5 text-white" />
+        </label>
+        <label class="flex items-center gap-1">题材
+          <input id="score-theme" type="number" min="0" max="2" step="1"
+            class="w-12 bg-slate-800 border border-slate-700 rounded px-1 py-0.5 text-white" />
+        </label>
+        <label class="flex items-center gap-1">个股
+          <input id="score-stock" type="number" min="0" max="1" step="1"
+            class="w-12 bg-slate-800 border border-slate-700 rounded px-1 py-0.5 text-white" />
+        </label>
+        <span class="text-slate-400">总分</span>
+        <span id="score-total" class="font-bold text-emerald-400 text-lg">0</span>
+        <span class="text-slate-500">/10</span>
+      </div>
+
+      <div class="flex items-center gap-2 text-sm">
+        <span class="text-slate-400">情绪节点:</span>
+        <select id="sentiment-node"
+          class="bg-slate-800 border border-slate-700 rounded px-2 py-0.5 text-white">
+          <option value="启动">启动 (3)</option>
+          <option value="上升">上升 (2)</option>
+          <option value="高潮">高潮 (1)</option>
+          <option value="分歧">分歧 (1)</option>
+          <option value="退潮">退潮 (0)</option>
+          <option value="断板次日">断板次日 (0)</option>
+        </select>
+      </div>
+
+      <div class="ml-auto text-xs text-slate-500">
+        <span id="refresh-info">轮询: --s</span>
+        <span class="mx-2">·</span>
+        <span id="last-update">等待数据...</span>
+      </div>
+    </div>
+    <div class="max-w-[1600px] mx-auto px-4 flex gap-0 border-t border-slate-800">
+      <button id="tab-btn-monitor" onclick="switchTab('monitor')"
+        class="px-5 py-1.5 text-sm border-b-2 border-emerald-400 text-emerald-400 font-medium">盯盘看板</button>
+      <button id="tab-btn-strategy" onclick="switchTab('strategy')"
+        class="px-5 py-1.5 text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200">策略报告</button>
+    </div>
+  </header>
+
+  <main id="pane-monitor" class="max-w-[1600px] mx-auto p-4 grid grid-cols-12 gap-4">
+    <!-- 左：盘前区 -->
+    <section class="col-span-12 lg:col-span-3 space-y-3">
+      <div class="text-xs uppercase tracking-wider text-slate-500">盘前区</div>
+
+      <div class="card p-3"><div class="font-semibold text-slate-200 mb-2">指数关键位 · IF-THEN</div>
+        <div id="card-indices" class="text-xs text-slate-300 space-y-1">等待数据…</div></div>
+
+      <div class="card p-3"><div class="font-semibold text-slate-200 mb-2">隔夜外盘</div>
+        <div id="card-overseas" class="text-xs text-slate-300 space-y-1">等待数据…</div></div>
+
+      <div class="card p-3"><div class="font-semibold text-slate-200 mb-2">情绪风标候选</div>
+        <div id="card-sentinels" class="text-xs text-slate-300 space-y-1">等待数据…</div></div>
+
+      <div class="card p-3"><div class="font-semibold text-slate-200 mb-2">主线 / 支线题材</div>
+        <div id="card-themes" class="text-xs text-slate-300 space-y-1">等待数据…</div></div>
+
+      <div class="card p-3"><div class="font-semibold text-slate-200 mb-2">涨停梯队</div>
+        <div id="card-ladder" class="text-xs text-slate-300">等待数据…</div></div>
+
+      <div class="card p-3"><div class="font-semibold text-slate-200 mb-2">断板统计</div>
+        <div id="card-duanban" class="text-xs text-slate-300 space-y-1">等待数据…</div></div>
+
+      <div class="card p-3"><div class="font-semibold text-slate-200 mb-2">竞价汇总（核心股 / 封单前五）</div>
+        <div id="card-auction" class="text-xs text-slate-300 space-y-2">等待数据…</div></div>
+    </section>
+
+    <!-- 中：盯盘操作指引 -->
+    <section class="col-span-12 lg:col-span-6 space-y-3">
+      <div class="text-xs uppercase tracking-wider text-slate-500">盘中区 · 盯盘操作指引</div>
+
+      <div class="card p-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="font-semibold text-slate-200">规则 + 手动备注（最新置顶，≤20）</div>
+          <div class="text-xs text-slate-500"><span id="advisor-count">0</span> 条</div>
+        </div>
+
+        <div id="advisor-list" class="space-y-2 max-h-[60vh] overflow-auto pr-1">
+          <div class="text-xs text-slate-500">等待数据…</div>
+        </div>
+
+        <div class="mt-3 border-t border-slate-800 pt-3">
+          <label class="block text-xs text-slate-400 mb-1">追加一条手动备注</label>
+          <textarea id="note-input" rows="2" maxlength="500"
+            class="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
+            placeholder="例：龙一反包，盯住尾盘分歧能否加强"></textarea>
+          <div class="flex items-center gap-2 mt-2">
+            <select id="note-level" class="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-white">
+              <option value="info">info</option>
+              <option value="warn">warn</option>
+              <option value="critical">critical</option>
+            </select>
+            <button id="note-submit"
+              class="bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 text-white text-sm px-3 py-1 rounded">
+              追加备注
+            </button>
+            <span id="note-status" class="text-xs text-slate-400"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 右：盘后区 -->
+    <section class="col-span-12 lg:col-span-3 space-y-3">
+      <div class="text-xs uppercase tracking-wider text-slate-500">盘后区</div>
+
+      <div class="card p-3"><div class="font-semibold text-slate-200 mb-2">涨跌停比 · 炸板</div>
+        <div id="card-ratio" class="text-xs text-slate-300">等待数据…</div></div>
+
+      <div class="card p-3"><div class="font-semibold text-slate-200 mb-2">龙虎榜要点</div>
+        <div id="card-lhb" class="text-xs text-slate-300 space-y-1">等待数据…</div></div>
+
+      <div class="card p-3"><div class="font-semibold text-slate-200 mb-2">模式命中率 · 次日预案</div>
+        <div id="card-pattern" class="text-xs text-slate-300 space-y-2">等待数据…</div></div>
+    </section>
+  </main>
+
+  <div id="pane-strategy" class="hidden max-w-[1600px] mx-auto p-4">
+    <div id="strategy-header" class="text-xs text-slate-400 mb-4">等待加载...</div>
+    <div id="strategy-content"></div>
+  </div>
+
+  <footer class="max-w-[1600px] mx-auto p-4 text-center text-xs text-rose-400">
+    研究参考，不构成投资建议
+  </footer>
+
+  <script>
+    const STORAGE_KEY_SCORE = 'sanyi-dashboard-score';
+    const STORAGE_KEY_NODE = 'sanyi-dashboard-node';
+
+    // ---------- 四维打分 localStorage ----------
+    function loadScore() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_SCORE);
+        if (!raw) return { index: 0, sentiment: 0, theme: 0, stock: 0 };
+        return JSON.parse(raw);
+      } catch { return { index: 0, sentiment: 0, theme: 0, stock: 0 }; }
+    }
+    function saveScore(s) { localStorage.setItem(STORAGE_KEY_SCORE, JSON.stringify(s)); }
+    function applyScore() {
+      const s = loadScore();
+      document.getElementById('score-index').value = s.index || 0;
+      document.getElementById('score-sentiment').value = s.sentiment || 0;
+      document.getElementById('score-theme').value = s.theme || 0;
+      document.getElementById('score-stock').value = s.stock || 0;
+      updateTotal();
+    }
+    function updateTotal() {
+      const read = (id, max) => {
+        const v = parseInt(document.getElementById(id).value || '0', 10);
+        if (isNaN(v)) return 0;
+        return Math.max(0, Math.min(max, v));
+      };
+      const s = {
+        index: read('score-index', 4),
+        sentiment: read('score-sentiment', 3),
+        theme: read('score-theme', 2),
+        stock: read('score-stock', 1),
+      };
+      saveScore(s);
+      const total = s.index + s.sentiment + s.theme + s.stock;
+      const el = document.getElementById('score-total');
+      el.textContent = total;
+      el.className = 'font-bold text-lg ' +
+        (total >= 6 ? 'text-emerald-400' : total <= 4 ? 'text-rose-400' : 'text-amber-400');
+    }
+    ['score-index', 'score-sentiment', 'score-theme', 'score-stock'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateTotal);
+    });
+
+    // ---------- 情绪节点 localStorage ----------
+    function applyNode() {
+      const v = localStorage.getItem(STORAGE_KEY_NODE) || '上升';
+      document.getElementById('sentiment-node').value = v;
+    }
+    document.getElementById('sentiment-node').addEventListener('change', e => {
+      localStorage.setItem(STORAGE_KEY_NODE, e.target.value);
+    });
+
+    // ---------- 今日日期 ----------
+    (function renderToday() {
+      const now = new Date();
+      const weeks = ['日', '一', '二', '三', '四', '五', '六'];
+      const iso = now.toISOString().slice(0, 10);
+      document.getElementById('today').textContent = `${iso} 星期${weeks[now.getDay()]}`;
+    })();
+
+    // ---------- 轮询周期 ----------
+    function getRefreshIntervalMs() {
+      const now = new Date();
+      const mins = now.getHours() * 60 + now.getMinutes();
+      if (mins >= 8 * 60 + 30 && mins < 9 * 60 + 15) return 60_000;
+      if (mins >= 9 * 60 + 15 && mins < 9 * 60 + 30) return 15_000;
+      if (mins >= 9 * 60 + 30 && mins < 15 * 60) return 60_000;
+      if (mins >= 15 * 60 && mins < 16 * 60 + 30) return 300_000;
+      return 120_000;
+    }
+
+    // ---------- 渲染 ----------
+    function renderIndices(list) {
+      const el = document.getElementById('card-indices');
+      if (!list || !list.length) { el.textContent = '等待数据…'; return; }
+      el.innerHTML = list.map(idx => `
+        <div class="border-b border-slate-800 last:border-0 pb-1">
+          <div class="flex justify-between">
+            <span class="text-slate-200">${idx.name || ''}</span>
+            <span>${idx.point ?? '--'}</span>
+          </div>
+          <div class="text-slate-500 text-[11px]">支撑 ${idx.key_support ?? '--'} · 压力 ${idx.key_resistance ?? '--'}</div>
+          <div class="text-amber-300 text-[11px]">${idx.ifthen || ''}</div>
+        </div>`).join('');
+    }
+
+    function renderOverseas(list) {
+      const el = document.getElementById('card-overseas');
+      if (!list || !list.length) { el.textContent = '等待数据…'; return; }
+      el.innerHTML = list.map(o => {
+        const pct = o.change_pct;
+        const cls = pct == null ? 'text-slate-400' : pct >= 0 ? 'text-rose-300' : 'text-emerald-300';
+        return `<div class="flex justify-between">
+          <span>${o.name || o.symbol}</span>
+          <span class="${cls}">${pct == null ? '--' : pct.toFixed(2) + '%'}</span>
+        </div>`;
+      }).join('');
+    }
+
+    function renderSentinels(list) {
+      const el = document.getElementById('card-sentinels');
+      if (!list || !list.length) { el.textContent = '等待数据…'; return; }
+      el.innerHTML = list.map(s => `
+        <div class="border-b border-slate-800 last:border-0 pb-1">
+          <div class="text-slate-300">${s.role}：<span class="text-slate-100">${s.code || ''} ${s.name || ''}</span></div>
+          <div class="text-[11px] text-slate-500">${s.reason || ''}</div>
+        </div>`).join('');
+    }
+
+    function renderThemes(themes) {
+      const el = document.getElementById('card-themes');
+      if (!themes) { el.textContent = '等待数据…'; return; }
+      const pack = (label, arr) => {
+        if (!arr || !arr.length) return `<div class="text-slate-500 text-[11px]">${label}: 无</div>`;
+        return `<div><div class="text-slate-400 text-[11px]">${label}</div>` +
+          arr.map(t => `<div class="flex justify-between"><span>${t.name || ''}</span><span class="text-amber-300">${t.strength_pct == null ? '' : t.strength_pct.toFixed(2) + '%'}</span></div>`).join('')
+          + `</div>`;
+      };
+      el.innerHTML = pack('主线', themes.main) + pack('支线', themes.sub);
+    }
+
+    function renderLadder(ladder) {
+      const el = document.getElementById('card-ladder');
+      if (!ladder) { el.textContent = '等待数据…'; return; }
+      const rows = [9, 8, 7, 6, 5, 4, 3, 2, 1].map(k => {
+        const n = ladder[String(k)] ?? 0;
+        return `<div class="flex items-center gap-2">
+          <span class="text-slate-500 w-8">${k} 板</span>
+          <span class="flex-1 bg-slate-800 h-2 rounded overflow-hidden">
+            <span class="block h-2 bg-rose-500" style="width:${Math.min(100, n * 10)}%"></span>
+          </span>
+          <span class="w-6 text-right">${n}</span>
+        </div>`;
+      });
+      el.innerHTML = rows.join('');
+    }
+
+    function renderDuanban(list) {
+      const el = document.getElementById('card-duanban');
+      if (!list || !list.length) { el.textContent = '今日无断板'; return; }
+      el.innerHTML = list.map(d => `
+        <div class="text-rose-300">${d.code || ''} ${d.name || ''} · 最高 ${d.highest_board || 0} 板
+          <span class="text-slate-500 text-[11px]">${d.reason || ''}</span></div>`).join('');
+    }
+
+    function renderAuctionCard(auction) {
+      const el = document.getElementById('card-auction');
+      if (!auction) { el.textContent = '等待数据…'; return; }
+      const core = auction.core_intersection || [];
+      const recs = auction.recommendations || [];
+      const fds = auction.fengdan_top5 || [];
+      const ms = auction.market_sentiment || {};
+      el.innerHTML = `
+        <div><span class="text-slate-400">市场情绪:</span>
+          <span class="text-amber-300">${ms.label || '--'}</span>
+          <span class="text-slate-500">${ms.score != null ? '(' + ms.score.toFixed(2) + '%)' : ''}</span>
+        </div>
+        <div><div class="text-slate-400 text-[11px]">核心股交集</div>
+          ${core.length ? core.map(c => `<div>${c.code || ''} ${c.name || ''} · ${c.sector || ''} rank${c.rank ?? '-'}</div>`).join('') : '<div class="text-slate-500 text-[11px]">无</div>'}
+        </div>
+        <div><div class="text-slate-400 text-[11px]">今日推荐（前 3）</div>
+          ${recs.slice(0, 3).map(r => `<div>${r.code || ''} ${r.name || ''} · ${r.reason_tag || ''} ${r.circ_mv ? '流通' + r.circ_mv.toFixed(1) + '亿' : ''}</div>`).join('') || '<div class="text-slate-500 text-[11px]">无</div>'}
+        </div>
+        <div><div class="text-slate-400 text-[11px]">封单前五</div>
+          ${fds.slice(0, 5).map(f => `<div>${f.code || ''} ${f.name || ''} · ${f.seal_amount_yi ? f.seal_amount_yi.toFixed(1) + '亿' : '--'} · ${f.lu_desc || ''}</div>`).join('') || '<div class="text-slate-500 text-[11px]">无</div>'}
+        </div>`;
+    }
+
+    function renderAdvisor(advisor) {
+      const list = document.getElementById('advisor-list');
+      const count = document.getElementById('advisor-count');
+      const messages = (advisor && advisor.messages) || [];
+      count.textContent = messages.length;
+      if (!messages.length) { list.innerHTML = '<div class="text-xs text-slate-500">等待数据…</div>'; return; }
+      list.innerHTML = messages.map(m => {
+        const chip = `chip-${m.level || 'info'}`;
+        const typeChip = `chip-${m.type || 'system'}`;
+        const ts = (m.ts || '').replace('T', ' ').slice(0, 19);
+        return `<div class="border border-slate-800 bg-slate-900/60 rounded p-2">
+          <div class="flex items-center gap-2 text-[11px] mb-1">
+            <span class="chip ${chip}">${m.level || 'info'}</span>
+            <span class="chip ${typeChip}">${m.type || 'system'}</span>
+            <span class="text-slate-500">${ts}</span>
+          </div>
+          <div class="text-sm text-slate-100 whitespace-pre-wrap">${escapeHtml(m.text || '')}</div>
+        </div>`;
+      }).join('');
+    }
+
+    function renderRatio(pm) {
+      const el = document.getElementById('card-ratio');
+      if (!pm) { el.textContent = '等待数据…'; return; }
+      el.innerHTML = `
+        <div>涨停: <span class="text-rose-300">${pm.limit_up_count ?? 0}</span>
+          · 跌停: <span class="text-emerald-300">${pm.limit_down_count ?? 0}</span>
+          · 炸板: <span class="text-amber-300">${pm.blast_count ?? 0}</span></div>
+        <div>比值: ${pm.ratio != null ? pm.ratio.toFixed(2) : '--'}</div>`;
+    }
+
+    function renderLhb(list) {
+      const el = document.getElementById('card-lhb');
+      if (!list || !list.length) { el.textContent = '盘后未更新'; return; }
+      el.innerHTML = list.map(d => `
+        <div><span class="text-slate-100">${d.code || ''} ${d.name || ''}</span>
+          · ${d.direction || ''} ${d.amount_yi != null ? d.amount_yi.toFixed(2) + '亿' : ''}
+          <div class="text-[11px] text-slate-500">${d.seat || ''} · ${d.note || ''}</div></div>`).join('');
+    }
+
+    function renderPattern(pm) {
+      const el = document.getElementById('card-pattern');
+      if (!pm) { el.textContent = '等待数据…'; return; }
+      const hit = (pm.pattern_hit_rate || []).map(p => `
+        <div class="flex justify-between">
+          <span>${p.pattern}</span>
+          <span class="text-amber-300">${p.hit_rate != null ? p.hit_rate.toFixed(0) + '%' : '--'} (${p.hit_count || 0}/${p.triggered_count || 0})</span>
+        </div>`).join('') || '<div class="text-slate-500 text-[11px]">无</div>';
+      const plan = (pm.next_day_plan || []).map(n => `
+        <div class="border-t border-slate-800 pt-1">
+          <div>${n.theme || ''} <span class="text-[11px] text-slate-500">${n.plan_tag || ''}</span></div>
+          <div class="text-[11px] text-slate-400">${(n.leaders || []).join(' / ')}</div>
+          <div class="text-[11px] text-slate-500">${n.watch_points || ''}</div>
+        </div>`).join('') || '<div class="text-slate-500 text-[11px]">次日预案未填</div>';
+      el.innerHTML = `<div>${hit}</div><div>${plan}</div>`;
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function setLastUpdate(ok, ts) {
+      const el = document.getElementById('last-update');
+      if (ok) {
+        el.textContent = `更新 ${ts || new Date().toISOString().slice(11, 19)}`;
+        el.className = 'text-emerald-400';
+      } else {
+        el.textContent = '等待数据（后端未启动或数据未生成）';
+        el.className = 'text-rose-400';
+      }
+    }
+
+    // ---------- fetch 主流程 ----------
+    async function refresh() {
+      try {
+        const res = await fetch('/data', { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        renderIndices((data.premarket && data.premarket.indices) || []);
+        renderOverseas((data.premarket && data.premarket.overseas) || []);
+        renderSentinels((data.premarket && data.premarket.sentinels) || []);
+        renderThemes((data.premarket && data.premarket.themes) || null);
+        renderLadder((data.premarket && data.premarket.ladder) || null);
+        renderDuanban((data.premarket && data.premarket.duanban) || []);
+        renderAuctionCard(data.auction);
+        renderAdvisor(data.advisor);
+        renderRatio(data.postmarket);
+        renderLhb((data.postmarket && data.postmarket.dragon_tiger) || []);
+        renderPattern(data.postmarket);
+        setLastUpdate(true, data.server_ts);
+        document.getElementById('note-submit').disabled = false;
+      } catch (err) {
+        setLastUpdate(false);
+        document.getElementById('note-submit').disabled = true;
+      }
+    }
+
+    // ---------- 备注提交 ----------
+    async function submitNote() {
+      const input = document.getElementById('note-input');
+      const level = document.getElementById('note-level').value;
+      const status = document.getElementById('note-status');
+      const text = input.value.trim();
+      if (!text) { status.textContent = '不能为空'; return; }
+      status.textContent = '提交中…';
+      try {
+        const res = await fetch('/append-note', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, level }),
+        });
+        const json = await res.json();
+        if (!res.ok || !json.ok) { status.textContent = json.error || '失败'; return; }
+        input.value = '';
+        status.textContent = '已追加';
+        refresh();
+      } catch (e) {
+        status.textContent = '后端未启动';
+      }
+    }
+    document.getElementById('note-submit').addEventListener('click', submitNote);
+
+    // ---------- 动态轮询 ----------
+    let currentInterval = 0;
+    let timer = null;
+    function scheduleNext() {
+      const next = getRefreshIntervalMs();
+      if (next !== currentInterval) {
+        currentInterval = next;
+        document.getElementById('refresh-info').textContent = '轮询: ' + Math.round(next / 1000) + 's';
+      }
+      clearTimeout(timer);
+      timer = setTimeout(async () => {
+        await refresh();
+        scheduleNext();
+      }, next);
+    }
+
+    // ---------- Tab 切换 ----------
+    function switchTab(name) {
+      document.getElementById('pane-monitor').classList.toggle('hidden', name !== 'monitor');
+      document.getElementById('pane-strategy').classList.toggle('hidden', name !== 'strategy');
+      const active   = 'px-5 py-1.5 text-sm border-b-2 border-emerald-400 text-emerald-400 font-medium';
+      const inactive = 'px-5 py-1.5 text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200';
+      document.getElementById('tab-btn-monitor').className  = name === 'monitor'  ? active : inactive;
+      document.getElementById('tab-btn-strategy').className = name === 'strategy' ? active : inactive;
+      if (name === 'strategy') refreshStrategy();
+    }
+
+    // ---------- 策略报告 ----------
+    async function refreshStrategy() {
+      const header  = document.getElementById('strategy-header');
+      const content = document.getElementById('strategy-content');
+      header.className = 'text-xs text-slate-400 mb-4';
+      header.textContent = '加载中…';
+      try {
+        const res = await fetch('/data/strategy_results.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const strategies = data.strategies || [];
+        const ok = strategies.filter(s => s.success).length;
+        header.innerHTML =
+          `交易日：<span class="text-slate-200">${data.trade_date || '--'}</span>` +
+          ` &nbsp;·&nbsp; 更新：<span class="text-slate-200">${(data.updated_at || '').replace('T', ' ')}</span>` +
+          ` &nbsp;·&nbsp; 结果：<span class="text-emerald-400">${ok}</span>` +
+          `/<span class="text-slate-300">${strategies.length}</span> 成功`;
+        content.innerHTML = strategies.map(renderStrategyCard).join('');
+      } catch (err) {
+        header.textContent = '加载失败（' + err.message + '）—— 请确认 9:27 任务已运行';
+        header.className = 'text-rose-400 text-sm mb-4';
+        content.innerHTML = '';
+      }
+    }
+
+    function renderStrategyCard(s) {
+      const ok        = s.success;
+      const statusCls = ok ? 'text-emerald-400' : 'text-rose-400';
+      const statusTxt = ok ? '✅ 成功' : `❌ 失败 (exit ${s.returncode})`;
+      const eid       = 'out-' + s.name;
+      return `<div class="card p-3 mb-3">
+        <div class="flex items-center justify-between cursor-pointer select-none"
+             onclick="document.getElementById('${eid}').classList.toggle('hidden')">
+          <div class="flex items-center gap-3 flex-wrap">
+            <span class="font-semibold text-slate-100">${escapeHtml(s.label || s.name)}</span>
+            <span class="${statusCls} text-sm">${statusTxt}</span>
+            <span class="text-slate-500 text-xs">${s.elapsed_s}s &nbsp;·&nbsp; ${(s.run_at || '').replace('T', ' ')}</span>
+          </div>
+          <span class="text-slate-500 text-xs ml-2 shrink-0">▼ 展开</span>
+        </div>
+        <pre id="${eid}" class="hidden mt-2 text-xs text-slate-300 whitespace-pre-wrap bg-slate-950 rounded p-2 max-h-[500px] overflow-auto leading-relaxed">${escapeHtml(s.output || '（无输出）')}</pre>
+      </div>`;
+    }
+
+    // ---------- 启动 ----------
+    applyScore();
+    applyNode();
+    refresh();
+    scheduleNext();
+  </script>
+</body>
+</html>
