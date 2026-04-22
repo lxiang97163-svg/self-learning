@@ -28,14 +28,45 @@ MIME_MAP = {
 }
 
 
+def build_prompt(style: str, photo_count: int, custom_sample: str) -> str:
+    base = (
+        f"- 字数：200-400字\n"
+        f"- 以第一人称书写，像是在回忆这段经历\n"
+        f"- 照片有备注的，请结合备注内容准确描述，备注优先于视觉判断\n"
+        f"- 不要逐一描述每张照片，融合成一段有起伏的叙事\n"
+        f"- 不要出现照片、图片等词汇，就像真实的亲历者在回忆"
+    )
+
+    if style == "custom" and custom_sample.strip():
+        return (
+            f"请根据以上{photo_count}张照片，严格模仿以下文字样本的写作风格，写一段日记式的叙事记录。\n\n"
+            f"【参考文字样本（请仔细分析此人的用词习惯、句式节奏、情感表达方式，并完整复现这种风格）】\n"
+            f"{custom_sample.strip()}\n\n"
+            f"要求：\n"
+            f"{base}"
+        )
+
+    style_name, style_desc = STYLES.get(style, STYLES["healing"])
+    return (
+        f"请根据以上{photo_count}张照片，用{style_name}写一段日记式的叙事记录。\n\n"
+        f"要求：\n"
+        f"- 风格：{style_desc}\n"
+        f"{base}"
+    )
+
+
 @app.post("/api/generate")
 async def generate(
     photos: List[UploadFile] = File(...),
     notes: str = Form("[]"),
     style: str = Form("healing"),
+    custom_sample: str = Form(""),
 ):
     if len(photos) > 20:
         raise HTTPException(status_code=400, detail="最多上传20张照片")
+
+    if style == "custom" and not custom_sample.strip():
+        raise HTTPException(status_code=400, detail="请粘贴一段你的文字，AI 才能学习你的文风")
 
     api_key = os.getenv("DASHSCOPE_API_KEY")
     if not api_key:
@@ -60,19 +91,9 @@ async def generate(
         if note:
             content.append({"type": "text", "text": f"（第{i+1}张备注：{note}）"})
 
-    style_name, style_desc = STYLES.get(style, STYLES["healing"])
     content.append({
         "type": "text",
-        "text": (
-            f"请根据以上{len(photos)}张照片，用{style_name}写一段日记式的叙事记录。\n\n"
-            f"要求：\n"
-            f"- 风格：{style_desc}\n"
-            f"- 字数：200-400字\n"
-            f"- 以第一人称书写，像是在回忆这段经历\n"
-            f"- 照片有备注的，请结合备注内容准确描述，备注优先于视觉判断\n"
-            f"- 不要逐一描述每张照片，融合成一段有起伏的叙事\n"
-            f"- 不要出现"照片"、"图片"等词汇，就像真实的亲历者在回忆"
-        ),
+        "text": build_prompt(style, len(photos), custom_sample),
     })
 
     async with httpx.AsyncClient(timeout=90) as client:
