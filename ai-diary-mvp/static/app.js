@@ -132,8 +132,8 @@
 
   customSample.addEventListener('input', () => {
     const len = customSample.value.length;
-    charCounter.textContent = `${len} / 500`;
-    charCounter.classList.toggle('warn', len > 450);
+    charCounter.textContent = `${len} / 800`;
+    charCounter.classList.toggle('warn', len > 720);
   });
 
   // ── Generate ────────────────────────────────────
@@ -224,7 +224,7 @@
     fileInput.value = '';
     addMoreInput.value = '';
     customSample.value = '';
-    charCounter.textContent = '0 / 500';
+    charCounter.textContent = '0 / 800';
     resultCard.hidden = true;
     controlsCard.hidden = true;
     photosCard.hidden = true;
